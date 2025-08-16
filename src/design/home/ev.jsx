@@ -49,7 +49,7 @@ export default function TextEventSlider() {
               transition={{ duration: 0.7 }}
               className="text-center"
             >
-              <h3 className="text-2xl font-semibold">{events[index].title}</h3>
+              <h3 className="text-3xl font-bold">{events[index].title}</h3>
               <p className="text-sm text-gray-400">{events[index].date}</p>
               <p className="mt-2 text-gray-300">{events[index].description}</p>
             </motion.div>

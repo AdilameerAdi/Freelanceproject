@@ -33,7 +33,7 @@ export default function BlogSection() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 h-screen grid grid-cols-1 md:grid-cols-3 gap-8 bg-gradient-to-b from-blue-300 via-blue-100 to-white">
+    <div className="max-w-7xl mt-10 mx-auto px-4 py-8 h-screen grid grid-cols-1 md:grid-cols-3 gap-8 bg-gradient-to-b from-blue-300 via-blue-100 to-white">
       {/* Left Column - Main Post */}
       <div className="md:col-span-2 bg-[#1B263B] p-4 rounded shadow-lg flex flex-col overflow-y-auto max-h-full">
         <h2 className="text-2xl font-bold text-[#00BFFF] mb-2">{activePost.title}</h2>
