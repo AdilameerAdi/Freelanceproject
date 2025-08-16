@@ -1,6 +1,9 @@
-
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+  const navigate = useNavigate();
+
   const latestNews = [
     {
       title: "New Dungeon Released!",
@@ -31,13 +34,23 @@ export default function Home() {
     { label: "📰 News & Announcements", link: "/blog" },
     { label: "🎉 Events", link: "/events" },
     { label: "🎧 Support", link: "/support" },
-    { label: "❓ FAQs", link: "/information" },
+    { label: "❓ FAQs", link: "/faqs" }, // route to Faqs component
     { label: "⭐ Reviews", link: "/reviews" },
   ];
 
+  const handleClick = (item) => {
+    if (item.external) {
+      window.open(item.link, "_blank");
+    } else {
+      navigate(item.link); // ✅ navigate via React Router
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-950 min-h-screen text-white">
-      <h1 className="text-3xl font-bold text-center mb-10">Welcome to NosDionisy</h1>
+      <h1 className="text-3xl font-bold text-center mb-10">
+        Welcome to NosDionisy
+      </h1>
 
       <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
         {/* Left Column - Menu */}
@@ -45,11 +58,7 @@ export default function Home() {
           {menuItems.map((item, idx) => (
             <div
               key={idx}
-              onClick={() =>
-                item.external
-                  ? window.open(item.link, "_blank")
-                  : (window.location.href = item.link)
-              }
+              onClick={() => handleClick(item)}
               className="bg-gray-900 p-4 rounded-xl shadow hover:shadow-lg hover:-translate-y-1 transition cursor-pointer"
             >
               <span className="text-lg font-medium">{item.label}</span>

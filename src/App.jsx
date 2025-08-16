@@ -9,6 +9,8 @@ import SupportMain from "./design/Support/SupportMain";
 import InformationMain from "./design/Information/InformationMain";
 import Mainupdates from "./design/updates/Mainupdates";
 import EvenMain from "./design/even/EvenMain";
+import Mainfaqs from "./design/faqs/Mainfaqs";
+import MainRev from "./design/Review/MainRev";
 function App() {
   return (
     <Router>
@@ -22,6 +24,8 @@ function App() {
           <Route path="/support" element={<SupportMain />} />
           <Route path="/updates" element={<Mainupdates />} />
           <Route path="/info" element={<InformationMain />} />
+          <Route path="/faqs" element={<Mainfaqs />} />
+           <Route path="/reviews" element={<MainRev />} />
       </Routes>
     </Router>
   );

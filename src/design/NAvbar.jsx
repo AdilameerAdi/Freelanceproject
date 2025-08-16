@@ -6,6 +6,7 @@ export default function Navbar() {
 
   const menuItems = [
     "Play Game",
+    "Home",
     "Staff",
     "Support",
     "News",
@@ -16,7 +17,10 @@ export default function Navbar() {
   ];
 const navigate = useNavigate();
   const handleClick = (item) => {
-    if (item === "Play Game") {
+    if (item === "Home") {
+    navigate("/"); // Go to homepage
+  }
+    else if (item === "Play Game") {
       window.open("https://nosdionisy.com/", "_blank"); // Open in new tab
     }
     else if (item === "News") {
@@ -40,7 +44,7 @@ const navigate = useNavigate();
   };
 
   return (
-    <nav className="bg-[#FFDC00] shadow-lg">
+    <nav className="bg-[#FFDC00] shadow-lg fixed top-0 left-0 w-full z-10">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16 w-full">
           {/* Desktop Menu */}
