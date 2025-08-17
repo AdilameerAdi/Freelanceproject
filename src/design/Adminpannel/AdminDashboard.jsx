@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { eventService, staffService } from "../../services/supabase";
+import React, { useState, useEffect } from "react";
+import { eventService, staffService, supportService } from "../../services/supabase";
 
 export default function AdminDashboard({ staffMembers, setStaffMembers, events, setEvents, loadEvents, loadStaff }) {
   const [activeSection, setActiveSection] = useState("events");
@@ -25,6 +25,57 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
   });
   const [editingStaffId, setEditingStaffId] = useState(null);
   const [showStaffForm, setShowStaffForm] = useState(false);
+
+  // Support tickets state
+  const [pendingTickets, setPendingTickets] = useState([]);
+  const [resolvedTickets, setResolvedTickets] = useState([]);
+  const [ticketsLoading, setTicketsLoading] = useState(false);
+
+  useEffect(() => {
+    if (activeSection === "pending") {
+      loadTickets();
+    }
+  }, [activeSection]);
+
+  const loadTickets = async () => {
+    try {
+      setTicketsLoading(true);
+      const [pending, resolved] = await Promise.all([
+        supportService.getPendingTickets(),
+        supportService.getResolvedTickets()
+      ]);
+      setPendingTickets(pending);
+      setResolvedTickets(resolved);
+    } catch (error) {
+      console.error('Error loading tickets:', error);
+    } finally {
+      setTicketsLoading(false);
+    }
+  };
+
+  const handleResolveTicket = async (ticketId, adminResponse = null) => {
+    try {
+      await supportService.updateTicketStatus(ticketId, 'resolved', adminResponse, 'Admin');
+      await loadTickets(); // Refresh tickets
+      alert('Ticket resolved successfully!');
+    } catch (error) {
+      console.error('Error resolving ticket:', error);
+      alert('Failed to resolve ticket. Please try again.');
+    }
+  };
+
+  const handleDeleteTicket = async (ticketId) => {
+    if (window.confirm('Are you sure you want to delete this ticket? This action cannot be undone.')) {
+      try {
+        await supportService.deleteTicket(ticketId);
+        await loadTickets(); // Refresh tickets
+        alert('Ticket deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting ticket:', error);
+        alert('Failed to delete ticket. Please try again.');
+      }
+    }
+  };
 
   // Event Management Functions
   const handleAddEvent = async () => {
@@ -496,13 +547,137 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
       case "pending":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">Pending Problems</h2>
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">Support Tickets Management</h2>
             <p className="text-gray-600 mb-6">
-              View and manage pending problems submitted by users.
+              View and manage support tickets submitted by users.
             </p>
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <p className="text-gray-500 text-center py-8">No pending problems at the moment.</p>
-            </div>
+
+            {ticketsLoading ? (
+              <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p>Loading tickets...</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {/* Pending Tickets */}
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                  <h3 className="text-xl font-semibold mb-4 text-yellow-600 flex items-center gap-2">
+                    ⚠️ Pending Tickets ({pendingTickets.length})
+                  </h3>
+                  {pendingTickets.length === 0 ? (
+                    <p className="text-gray-500 text-center py-8">No pending tickets at the moment.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {pendingTickets.map((ticket) => (
+                        <div key={ticket.id} className="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
+                          <div className="flex justify-between items-start mb-3">
+                            <div className="flex-1">
+                              <h4 className="text-lg font-semibold text-gray-800">{ticket.title}</h4>
+                              <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                                <span>👤 {ticket.user_name}</span>
+                                <span>📧 {ticket.user_email}</span>
+                                <span>🏷️ {ticket.category}</span>
+                                <span className={`px-2 py-1 rounded-full text-xs ${
+                                  ticket.priority === 'urgent' ? 'bg-red-100 text-red-800' :
+                                  ticket.priority === 'high' ? 'bg-orange-100 text-orange-800' :
+                                  ticket.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-green-100 text-green-800'
+                                }`}>
+                                  {ticket.priority} priority
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex gap-2 ml-4">
+                              <button
+                                onClick={() => {
+                                  const response = prompt("Enter admin response (optional):");
+                                  handleResolveTicket(ticket.id, response);
+                                }}
+                                className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition text-sm"
+                              >
+                                ✅ Resolve
+                              </button>
+                              <button
+                                onClick={() => handleDeleteTicket(ticket.id)}
+                                className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-sm"
+                              >
+                                🗑️ Delete
+                              </button>
+                            </div>
+                          </div>
+                          <p className="text-gray-700 mb-3">{ticket.description}</p>
+                          <p className="text-xs text-gray-500">
+                            Submitted: {new Date(ticket.created_at).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: 'short', 
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Resolved Tickets */}
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                  <h3 className="text-xl font-semibold mb-4 text-green-600 flex items-center gap-2">
+                    ✅ Resolved Tickets ({resolvedTickets.length})
+                  </h3>
+                  {resolvedTickets.length === 0 ? (
+                    <p className="text-gray-500 text-center py-8">No resolved tickets yet.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {resolvedTickets.map((ticket) => (
+                        <div key={ticket.id} className="border border-green-200 rounded-lg p-4 bg-green-50">
+                          <div className="flex justify-between items-start mb-3">
+                            <div className="flex-1">
+                              <h4 className="text-lg font-semibold text-gray-800">{ticket.title}</h4>
+                              <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                                <span>👤 {ticket.user_name}</span>
+                                <span>📧 {ticket.user_email}</span>
+                                <span>🏷️ {ticket.category}</span>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleDeleteTicket(ticket.id)}
+                              className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-sm ml-4"
+                            >
+                              🗑️ Delete
+                            </button>
+                          </div>
+                          <p className="text-gray-700 mb-3">{ticket.description}</p>
+                          {ticket.admin_response && (
+                            <div className="bg-green-100 border-l-4 border-green-400 p-3 mb-3">
+                              <p className="text-sm font-semibold text-green-700">Admin Response:</p>
+                              <p className="text-green-800">{ticket.admin_response}</p>
+                            </div>
+                          )}
+                          <div className="text-xs text-gray-500 space-y-1">
+                            <p>Submitted: {new Date(ticket.created_at).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: 'short', 
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}</p>
+                            <p>Resolved: {new Date(ticket.resolved_at || ticket.updated_at).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: 'short', 
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })} {ticket.resolved_by && `by ${ticket.resolved_by}`}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         );
 

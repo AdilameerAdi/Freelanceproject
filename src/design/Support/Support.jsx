@@ -1,44 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AlertCircle, CheckCircle2, PlusCircle } from "lucide-react";
+import { supportService } from "../../services/supabase";
 
 export default function Support() {
   const [activeTab, setActiveTab] = useState("submit");
 
   const [formData, setFormData] = useState({
     name: "",
+    email: "",
     subject: "",
-    category: "Bug",
+    category: "Technical Issue",
     description: "",
   });
 
   const [errors, setErrors] = useState({});
+  const [pending, setPending] = useState([]);
+  const [solved, setSolved] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [pending, setPending] = useState([
-    {
-      id: 1,
-      name: "PlayerOne",
-      subject: "Game not loading properly",
-      category: "Bug",
-      description: "Whenever I try to load the map, it freezes.",
-    },
-    {
-      id: 2,
-      name: "PlayerTwo",
-      subject: "Payment issue with shop",
-      category: "Payment",
-      description: "I was charged twice for the same skin.",
-    },
-  ]);
+  // Generate user identifier for session tracking
+  const getUserIdentifier = () => {
+    let userIdentifier = localStorage.getItem('userIdentifier');
+    if (!userIdentifier) {
+      userIdentifier = 'user_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('userIdentifier', userIdentifier);
+    }
+    return userIdentifier;
+  };
 
-  const [solved, setSolved] = useState([
-    {
-      id: 3,
-      name: "PlayerThree",
-      subject: "Login bug fixed",
-      category: "Account",
-      description: "Couldn’t log in yesterday, but it’s fixed now.",
-    },
-  ]);
+  useEffect(() => {
+    loadUserTickets();
+  }, []);
+
+  const loadUserTickets = async () => {
+    try {
+      setLoading(true);
+      const userIdentifier = getUserIdentifier();
+      const tickets = await supportService.getTicketsByUser(userIdentifier);
+      
+      const pendingTickets = tickets.filter(ticket => ticket.status === 'pending');
+      const resolvedTickets = tickets.filter(ticket => ticket.status === 'resolved');
+      
+      setPending(pendingTickets);
+      setSolved(resolvedTickets);
+    } catch (error) {
+      console.error('Error loading tickets:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,13 +59,14 @@ export default function Support() {
   const validateForm = () => {
     let newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required.";
+    if (!formData.email.trim()) newErrors.email = "Email is required.";
     if (!formData.subject.trim()) newErrors.subject = "Subject is required.";
     if (!formData.description.trim())
       newErrors.description = "Description is required.";
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
@@ -63,18 +74,48 @@ export default function Support() {
       return;
     }
 
-    const newTicket = { id: Date.now(), ...formData };
-    setPending([...pending, newTicket]);
+    try {
+      const userIdentifier = getUserIdentifier();
+      
+      const ticketData = {
+        title: formData.subject,
+        description: formData.description,
+        category: formData.category,
+        user_name: formData.name,
+        user_email: formData.email,
+        user_identifier: userIdentifier
+      };
 
-    setFormData({
-      name: "",
-      subject: "",
-      category: "Bug",
-      description: "",
-    });
-    setErrors({});
-    setActiveTab("pending");
+      await supportService.createTicket(ticketData);
+
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        category: "Technical Issue",
+        description: "",
+      });
+      setErrors({});
+      
+      // Reload tickets to show the new one
+      await loadUserTickets();
+      setActiveTab("pending");
+    } catch (error) {
+      console.error('Error creating ticket:', error);
+      alert('Failed to submit ticket. Please try again.');
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="p-4 sm:p-6 min-h-screen text-white bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto mb-4"></div>
+          <p>Loading support tickets...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 min-h-screen text-white bg-gradient-to-br from-gray-900 via-gray-800 to-black">
@@ -146,6 +187,25 @@ export default function Support() {
                 )}
               </div>
 
+              {/* Email */}
+              <div>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Your Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`w-full p-3 rounded-lg bg-black/50 text-white border text-sm sm:text-base ${
+                    errors.email
+                      ? "border-red-500 focus:ring-2 focus:ring-red-500"
+                      : "border-gray-600 focus:ring-2 focus:ring-blue-500"
+                  }`}
+                />
+                {errors.email && (
+                  <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+                )}
+              </div>
+
               {/* Subject */}
               <div>
                 <input
@@ -172,10 +232,13 @@ export default function Support() {
                 onChange={handleChange}
                 className="w-full p-3 rounded-lg bg-black/50 text-white border border-gray-600 focus:ring-2 focus:ring-pink-500 text-sm sm:text-base"
               >
-                <option value="Bug">Bug</option>
-                <option value="Payment">Payment</option>
-                <option value="Account">Account</option>
-                <option value="Gameplay">Gameplay</option>
+                <option value="Technical Issue">Technical Issue</option>
+                <option value="Account Problem">Account Problem</option>
+                <option value="Payment Issue">Payment Issue</option>
+                <option value="Game Bug">Game Bug</option>
+                <option value="Feature Request">Feature Request</option>
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Report Player">Report Player</option>
                 <option value="Other">Other</option>
               </select>
 
@@ -223,11 +286,20 @@ export default function Support() {
                     key={item.id}
                     className="p-3 sm:p-4 bg-black/50 rounded-lg border-l-4 border-yellow-400 hover:bg-yellow-900/30 transition"
                   >
-                    <p className="font-bold text-white">{item.subject}</p>
+                    <p className="font-bold text-white">{item.title}</p>
                     <p className="text-xs sm:text-sm text-gray-400">
-                      By {item.name} | {item.category}
+                      By {item.user_name} | {item.category}
                     </p>
                     <p className="mt-1 text-sm">{item.description}</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Submitted: {new Date(item.created_at).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
                   </li>
                 ))}
               </ul>
@@ -248,13 +320,29 @@ export default function Support() {
                 {solved.map((item) => (
                   <li
                     key={item.id}
-                    className="p-3 sm:p-4 bg-black/50 rounded-lg border-l-4 border-green-400 hover:bg-green-900/30 transition line-through"
+                    className="p-3 sm:p-4 bg-black/50 rounded-lg border-l-4 border-green-400 hover:bg-green-900/30 transition"
                   >
-                    <p className="font-bold text-white">{item.subject}</p>
+                    <p className="font-bold text-white">{item.title}</p>
                     <p className="text-xs sm:text-sm text-gray-400">
-                      By {item.name} | {item.category}
+                      By {item.user_name} | {item.category}
                     </p>
                     <p className="mt-1 text-sm">{item.description}</p>
+                    {item.admin_response && (
+                      <div className="mt-3 p-2 bg-green-900/20 rounded border-l-2 border-green-400">
+                        <p className="text-xs text-green-400 font-semibold">Admin Response:</p>
+                        <p className="text-sm text-green-300">{item.admin_response}</p>
+                      </div>
+                    )}
+                    <p className="text-xs text-gray-500 mt-2">
+                      Resolved: {new Date(item.resolved_at || item.updated_at).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                      {item.resolved_by && <span> by {item.resolved_by}</span>}
+                    </p>
                   </li>
                 ))}
               </ul>

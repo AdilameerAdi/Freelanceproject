@@ -514,3 +514,170 @@ export const postService = {
     }
   }
 }
+
+// Support tickets related database operations
+export const supportService = {
+  // Get all tickets (for admin)
+  async getAllTickets() {
+    try {
+      const { data, error } = await supabase
+        .from('support_tickets')
+        .select('*')
+        .order('created_at', { ascending: false })
+      
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error('Error fetching tickets:', error)
+      return []
+    }
+  },
+
+  // Get pending tickets (for admin)
+  async getPendingTickets() {
+    try {
+      const { data, error } = await supabase
+        .from('support_tickets')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+      
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error('Error fetching pending tickets:', error)
+      return []
+    }
+  },
+
+  // Get resolved tickets (for admin)
+  async getResolvedTickets() {
+    try {
+      const { data, error } = await supabase
+        .from('support_tickets')
+        .select('*')
+        .eq('status', 'resolved')
+        .order('resolved_at', { ascending: false })
+      
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error('Error fetching resolved tickets:', error)
+      return []
+    }
+  },
+
+  // Get tickets by user (for user side)
+  async getTicketsByUser(userIdentifier) {
+    try {
+      const { data, error } = await supabase
+        .from('support_tickets')
+        .select('*')
+        .eq('user_identifier', userIdentifier)
+        .order('created_at', { ascending: false })
+      
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error('Error fetching user tickets:', error)
+      return []
+    }
+  },
+
+  // Create a new support ticket
+  async createTicket(ticketData) {
+    try {
+      const { data, error } = await supabase
+        .from('support_tickets')
+        .insert([{
+          title: ticketData.title,
+          description: ticketData.description,
+          category: ticketData.category,
+          priority: ticketData.priority || 'medium',
+          status: 'pending',
+          user_name: ticketData.user_name,
+          user_email: ticketData.user_email,
+          user_identifier: ticketData.user_identifier,
+          created_at: new Date().toISOString()
+        }])
+        .select()
+      
+      if (error) throw error
+      return data[0]
+    } catch (error) {
+      console.error('Error creating ticket:', error)
+      throw error
+    }
+  },
+
+  // Update ticket status (admin only)
+  async updateTicketStatus(ticketId, status, adminResponse = null, resolvedBy = null) {
+    try {
+      const updateData = {
+        status: status,
+        updated_at: new Date().toISOString()
+      }
+
+      if (adminResponse) {
+        updateData.admin_response = adminResponse
+      }
+
+      if (status === 'resolved' && resolvedBy) {
+        updateData.resolved_by = resolvedBy
+        updateData.resolved_at = new Date().toISOString()
+      }
+
+      const { data, error } = await supabase
+        .from('support_tickets')
+        .update(updateData)
+        .eq('id', ticketId)
+        .select()
+      
+      if (error) throw error
+      return data[0]
+    } catch (error) {
+      console.error('Error updating ticket status:', error)
+      throw error
+    }
+  },
+
+  // Delete ticket (admin only)
+  async deleteTicket(ticketId) {
+    try {
+      const { error } = await supabase
+        .from('support_tickets')
+        .delete()
+        .eq('id', ticketId)
+      
+      if (error) throw error
+      return true
+    } catch (error) {
+      console.error('Error deleting ticket:', error)
+      throw error
+    }
+  },
+
+  // Get ticket categories
+  getCategories() {
+    return [
+      'Technical Issue',
+      'Account Problem',
+      'Payment Issue',
+      'Game Bug',
+      'Feature Request',
+      'General Inquiry',
+      'Report Player',
+      'Other'
+    ]
+  },
+
+  // Get priority levels
+  getPriorities() {
+    return [
+      { value: 'low', label: 'Low', color: 'text-green-500' },
+      { value: 'medium', label: 'Medium', color: 'text-yellow-500' },
+      { value: 'high', label: 'High', color: 'text-orange-500' },
+      { value: 'urgent', label: 'Urgent', color: 'text-red-500' }
+    ]
+  }
+}
