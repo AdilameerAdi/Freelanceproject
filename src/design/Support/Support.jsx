@@ -118,13 +118,24 @@ export default function Support() {
   }
 
   return (
-    <div className="p-4 sm:p-6 min-h-screen text-white bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-8 text-center bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-transparent bg-clip-text drop-shadow-lg">
-        🎮 Gaming Support Center
-      </h1>
+    <div className="p-4 sm:p-6 mt-10 min-h-screen text-white bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="relative p-4">
+  <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 text-center">
+    {/* White shadow layer */}
+    <span className="absolute inset-0 p-4 text-white drop-shadow-lg">
+      🎮 Gaming Support Center
+    </span>
+
+    {/* Gradient layer */}
+    <span className="relative bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent">
+      🎮 Gaming Support Center
+    </span>
+  </h1>
+</div>
+
 
       {/* Navigation Tabs */}
-      <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-6 mb-8 sm:mb-10">
+      <div className="flex flex-col mt-5 sm:flex-row justify-center gap-3 sm:gap-6 mb-8 sm:mb-10">
         <button
           onClick={() => setActiveTab("submit")}
           className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-bold tracking-wide transition-all text-sm sm:text-base ${
