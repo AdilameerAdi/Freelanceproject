@@ -493,7 +493,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                 <h3 className="text-xl font-semibold mb-4 text-white">
                   {editingEventId ? "Edit Event" : "Add New Event"}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-gray-200">Event Title</label>
                     <input
@@ -636,7 +636,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                 <h3 className="text-xl font-semibold mb-4 text-white">
                   {editingStaffId ? "Edit Staff Member" : "Add New Staff Member"}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-gray-200">Full Name</label>
                     <input
@@ -717,7 +717,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
               </button>
             )}
 
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
               {staffMembers.map((staff) => (
                 <div
                   key={staff.id}
@@ -1125,7 +1125,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                 <h3 className="text-xl font-semibold mb-4 text-white">
                   {editingUpdateId ? "Edit Update" : "Create New Update"}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-gray-200">Update Title</label>
                     <input
@@ -1332,14 +1332,14 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
       </header>
 
       {/* Main Layout */}
-      <div className="flex">
+      <div className="flex flex-col lg:flex-row">
         {/* Sidebar */}
-        <aside className="w-64 bg-gray-800 shadow-lg min-h-screen border-r border-gray-700">
-          <nav className="p-4">
-            <ul className="space-y-2">
-              <li>
+        <aside className="w-full lg:w-64 bg-gray-800 shadow-lg min-h-screen border-r border-gray-700 lg:min-h-screen">
+          <nav className="p-2 sm:p-4">
+            <ul className="space-y-1 sm:space-y-2 flex lg:flex-col overflow-x-auto lg:overflow-x-visible">
+              <li className="min-w-max lg:min-w-0">
                 <button
-                  className={`w-full text-left p-3 rounded-lg transition ${
+                  className={`w-full text-left p-2 sm:p-3 rounded-lg transition text-sm sm:text-base whitespace-nowrap lg:whitespace-normal ${
                     activeSection === "events"
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
@@ -1349,9 +1349,9 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                   🎉 Events
                 </button>
               </li>
-              <li>
+              <li className="min-w-max lg:min-w-0">
                 <button
-                  className={`w-full text-left p-3 rounded-lg transition ${
+                  className={`w-full text-left p-2 sm:p-3 rounded-lg transition text-sm sm:text-base whitespace-nowrap lg:whitespace-normal ${
                     activeSection === "staff"
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
@@ -1361,9 +1361,9 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                   👥 Staff Management
                 </button>
               </li>
-              <li>
+              <li className="min-w-max lg:min-w-0">
                 <button
-                  className={`w-full text-left p-3 rounded-lg transition ${
+                  className={`w-full text-left p-2 sm:p-3 rounded-lg transition text-sm sm:text-base whitespace-nowrap lg:whitespace-normal ${
                     activeSection === "pending"
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
@@ -1373,9 +1373,9 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                   ⚠️ Pending Problems
                 </button>
               </li>
-              <li>
+              <li className="min-w-max lg:min-w-0">
                 <button
-                  className={`w-full text-left p-3 rounded-lg transition ${
+                  className={`w-full text-left p-2 sm:p-3 rounded-lg transition text-sm sm:text-base whitespace-nowrap lg:whitespace-normal ${
                     activeSection === "news"
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
@@ -1385,9 +1385,9 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                   📰 Latest News
                 </button>
               </li>
-              <li>
+              <li className="min-w-max lg:min-w-0">
                 <button
-                  className={`w-full text-left p-3 rounded-lg transition ${
+                  className={`w-full text-left p-2 sm:p-3 rounded-lg transition text-sm sm:text-base whitespace-nowrap lg:whitespace-normal ${
                     activeSection === "updates"
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
@@ -1414,7 +1414,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8">{renderSection()}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-auto">{renderSection()}</main>
       </div>
     </div>
   );

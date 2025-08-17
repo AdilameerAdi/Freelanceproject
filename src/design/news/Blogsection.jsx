@@ -254,22 +254,22 @@ export default function CommunityHub() {
   return (
     <div className="min-h-screen w-full mt-10 bg-gradient-to-b from-[#0a0f1f] via-[#0b132b] to-black text-white font-sans">
       {/* Banner / Hero Section */}
-      <div className="w-full bg-gradient-to-r from-purple-600/40 to-cyan-600/40 py-12 text-center shadow-lg">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
+      <div className="w-full bg-gradient-to-r from-purple-600/40 to-cyan-600/40 py-8 sm:py-12 text-center shadow-lg px-4">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
           🎮 Community Hub
         </h1>
-        <p className="text-gray-300 mt-2 text-lg">
+        <p className="text-gray-300 mt-2 text-base sm:text-lg max-w-2xl mx-auto">
           Share updates, discuss strategies, and connect with fellow gamers!
         </p>
       </div>
 
       {/* Main Content - Two Column Layout */}
-      <div className="p-6 max-w-7xl mx-auto mt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="p-3 sm:p-4 lg:p-6 max-w-7xl mx-auto mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           
           {/* Right Column - Trending Sidebar (appears first on mobile) */}
           <div className="lg:col-span-1 order-1 lg:order-2">
-            <div className="bg-[#111a2c] border border-purple-500/40 rounded-2xl shadow-2xl p-6 lg:sticky lg:mt-14">
+            <div className="bg-[#111a2c] border border-purple-500/40 rounded-xl sm:rounded-2xl shadow-2xl p-4 sm:p-6 lg:sticky lg:mt-14">
               <h2 className="text-xl font-bold text-red-400 mb-6 flex items-center gap-2">
                 <Flame size={20} /> Trending Posts
               </h2>
@@ -318,9 +318,9 @@ export default function CommunityHub() {
                 {/* Neon Background Glow */}
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-cyan-500/10 blur-3xl"></div>
 
-                <div className="relative grid grid-cols-4 h-full">
+                <div className="relative grid grid-cols-1 sm:grid-cols-4 h-full">
                   {/* First Part - 1/4 width with gradient background, avatar, name, likes and comments */}
-                  <div className="col-span-1 bg-gradient-to-br from-purple-600/30 via-cyan-600/20 to-blue-600/30 p-4 flex flex-col justify-center items-center text-center border-r border-purple-500/40">
+                  <div className="col-span-1 bg-gradient-to-br from-purple-600/30 via-cyan-600/20 to-blue-600/30 p-3 sm:p-4 flex flex-col justify-center items-center text-center sm:border-r border-purple-500/40">
                     <img
                       src={post.author_avatar || (post.author_type === 'admin' ? 'https://i.pravatar.cc/60?img=admin' : 'https://i.pravatar.cc/60?img=1')}
                       alt={post.author_name}
@@ -352,7 +352,7 @@ export default function CommunityHub() {
                   </div>
 
                   {/* Second, Third, and Fourth Parts - 3/4 width combined with post name and content */}
-                  <div className="col-span-3 p-6 flex flex-col justify-center">
+                  <div className="col-span-1 sm:col-span-3 p-4 sm:p-6 flex flex-col justify-center">
                     <div className="mb-2">
                       <p className="text-gray-400 text-xs">
                         {new Date(post.created_at).toLocaleDateString('en-US', { 
@@ -404,7 +404,7 @@ export default function CommunityHub() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="mt-8 flex flex-col items-center space-y-4">
+              <div className="mt-6 sm:mt-8 flex flex-col items-center space-y-4">
                 <div className="text-gray-400 text-sm">
                   Showing {((currentPage - 1) * postsPerPage) + 1} to {Math.min(currentPage * postsPerPage, totalPosts)} of {totalPosts} posts
                 </div>
@@ -461,12 +461,12 @@ export default function CommunityHub() {
 
       {/* Post Modal */}
       {showModal && selectedPost && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0a0f1f] border border-purple-500/40 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex h-full">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-[#0a0f1f] border border-purple-500/40 rounded-xl sm:rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
+            <div className="flex flex-col lg:flex-row h-full">
               
               {/* Left Side - Post Content */}
-              <div className="flex-1 p-6 border-r border-purple-500/40">
+              <div className="flex-1 p-4 sm:p-6 lg:border-r border-purple-500/40">
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-3">
                     <img
@@ -531,13 +531,13 @@ export default function CommunityHub() {
               </div>
 
               {/* Right Side - Comments */}
-              <div className="w-1/2 flex flex-col">
-                <div className="p-6 border-b border-yellow-500/30">
+              <div className="w-full lg:w-1/2 flex flex-col lg:border-t-0 border-t border-purple-500/40">
+                <div className="p-4 sm:p-6 border-b border-yellow-500/30">
                   <h3 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">Comments</h3>
                 </div>
 
                 {/* Comments List */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
                   {commentsLoading ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400 mx-auto mb-4"></div>

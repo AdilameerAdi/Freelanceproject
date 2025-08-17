@@ -53,7 +53,7 @@ export default function TextEventSlider({ events = [] }) {
   }
 
   return (
-    <div className="w-full bg-gradient-to-br mt-5 from-gray-900 via-gray-800 to-black py-12 px-6 shadow-2xl relative overflow-hidden">
+    <div className="w-full bg-gradient-to-br mt-5 from-gray-900 via-gray-800 to-black py-6 sm:py-8 md:py-12 px-3 sm:px-4 md:px-6 shadow-2xl relative overflow-hidden">
       {/* Animated background particles */}
       <div className="absolute inset-0">
         <div className="absolute top-10 left-10 w-4 h-4 bg-yellow-400 rounded-full animate-ping opacity-20"></div>
@@ -62,9 +62,9 @@ export default function TextEventSlider({ events = [] }) {
         <div className="absolute bottom-32 right-1/3 w-2 h-2 bg-green-400 rounded-full animate-ping opacity-20"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto text-center relative ">
+      <div className="max-w-6xl mx-auto text-center relative">
         <motion.h2 
-          className="text-4xl font-bold mb-8 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent"
+          className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 md:mb-8 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -75,14 +75,14 @@ export default function TextEventSlider({ events = [] }) {
         {/* Enhanced Event Slider */}
         <div className="relative">
           {/* Main Slider Container */}
-          <div className="relative h-64 bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden shadow-xl">
+          <div className="relative h-48 sm:h-56 md:h-64 bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-700/50 overflow-hidden shadow-xl">
             
             {/* Navigation Arrows */}
             {sliderEvents.length > 1 && (
               <>
                 <motion.button
                   onClick={prevSlide}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2  bg-gray-800/80 hover:bg-gray-700 text-white p-3 rounded-full transition-all duration-200 shadow-lg"
+                  className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-gray-800/80 hover:bg-gray-700 text-white p-2 sm:p-3 rounded-full transition-all duration-200 shadow-lg"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -91,7 +91,7 @@ export default function TextEventSlider({ events = [] }) {
                 
                 <motion.button
                   onClick={nextSlide}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2  bg-gray-800/80 hover:bg-gray-700 text-white p-3 rounded-full transition-all duration-200 shadow-lg"
+                  className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-gray-800/80 hover:bg-gray-700 text-white p-2 sm:p-3 rounded-full transition-all duration-200 shadow-lg"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -104,7 +104,7 @@ export default function TextEventSlider({ events = [] }) {
             {sliderEvents.length > 1 && (
               <motion.button
                 onClick={() => setIsPaused(!isPaused)}
-                className="absolute top-4 right-4  bg-gray-800/80 hover:bg-gray-700 text-white p-2 rounded-full transition-all duration-200 shadow-lg"
+                className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-gray-800/80 hover:bg-gray-700 text-white p-2 rounded-full transition-all duration-200 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -113,7 +113,7 @@ export default function TextEventSlider({ events = [] }) {
             )}
 
             {/* Event Content */}
-            <div className="flex items-center justify-center h-full px-16">
+            <div className="flex items-center justify-center h-full px-4 sm:px-8 md:px-16">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={index}
@@ -136,7 +136,7 @@ export default function TextEventSlider({ events = [] }) {
                       ease: "easeInOut" 
                     }}
                   >
-                    <span className="text-6xl drop-shadow-lg relative ">
+                    <span className="text-4xl sm:text-5xl md:text-6xl drop-shadow-lg relative">
                       {sliderEvents[index].icon}
                     </span>
                     {sliderEvents[index].status === "ongoing" && (
@@ -146,7 +146,7 @@ export default function TextEventSlider({ events = [] }) {
 
                   {/* Event Title with gradient */}
                   <motion.h3 
-                    className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent"
+                    className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
@@ -156,7 +156,7 @@ export default function TextEventSlider({ events = [] }) {
 
                   {/* Event Date with icon */}
                   <motion.p 
-                    className="text-yellow-400 font-medium mb-3 flex items-center justify-center gap-2"
+                    className="text-yellow-400 font-medium mb-2 sm:mb-3 flex items-center justify-center gap-2 text-sm sm:text-base"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
@@ -167,7 +167,7 @@ export default function TextEventSlider({ events = [] }) {
 
                   {/* Event Description */}
                   <motion.p 
-                    className="text-gray-300 text-lg leading-relaxed max-w-2xl mx-auto"
+                    className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto px-2 sm:px-0"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
@@ -229,14 +229,14 @@ export default function TextEventSlider({ events = [] }) {
 
         {/* Enhanced Action Buttons */}
         <motion.div 
-          className="mt-8 flex flex-wrap justify-center gap-4"
+          className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4 sm:px-0"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
           <motion.button
             onClick={() => navigate("/blog")}
-            className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg transition-all duration-300 transform"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg transition-all duration-300 transform text-sm sm:text-base"
             whileHover={{ 
               scale: 1.05,
               boxShadow: "0 10px 25px rgba(59, 130, 246, 0.3)"
@@ -248,7 +248,7 @@ export default function TextEventSlider({ events = [] }) {
 
           <motion.button
             onClick={() => navigate("/events")}
-            className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg transition-all duration-300 transform"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg transition-all duration-300 transform text-sm sm:text-base"
             whileHover={{ 
               scale: 1.05,
               boxShadow: "0 10px 25px rgba(34, 197, 94, 0.3)"
