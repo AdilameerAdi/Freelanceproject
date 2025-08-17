@@ -37,26 +37,31 @@ export default function Faqs() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-15 p-6 my-5  bg-gray-900 rounded-2xl shadow-lg">
-      <h2 className="text-3xl font-bold text-yellow-400 mb-6 text-center">
+    <div className="max-w-5xl mx-auto mt-28 px-6 py-10 bg-gradient-to-br from-gray-900 via-gray-800 mb-5 to-gray-900 rounded-3xl shadow-2xl border border-white/10">
+      <h2 className="text-4xl font-extrabold text-center text-yellow-400 mb-10 drop-shadow-md">
         ❓ Frequently Asked Questions
       </h2>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         {faqs.map((faq, index) => (
           <div
             key={index}
-            className="bg-gray-800 rounded-lg overflow-hidden shadow-md"
+            className="bg-gray-800/60 backdrop-blur-md rounded-xl border border-gray-700 hover:border-yellow-400/40 transition-all duration-300 shadow-md"
           >
             {/* Question */}
             <button
               onClick={() => toggleFAQ(index)}
-              className="w-full text-left px-6 py-4 text-lg font-medium flex justify-between items-center text-white hover:bg-gray-700"
+              className="w-full flex justify-between items-center px-6 py-4 text-lg font-semibold text-white hover:text-yellow-400 transition-colors"
             >
-              {faq.question}
-              <span className="ml-2 text-yellow-400">
-                {activeIndex === index ? "−" : "+"}
-              </span>
+              <span>{faq.question}</span>
+              <motion.span
+                initial={false}
+                animate={{ rotate: activeIndex === index ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+                className="ml-2 text-yellow-400 text-2xl leading-none"
+              >
+                ▼
+              </motion.span>
             </button>
 
             {/* Answer (animated) */}
@@ -67,7 +72,7 @@ export default function Faqs() {
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="px-6 pb-4 text-gray-300"
+                  className="px-6 pb-5 text-gray-300 leading-relaxed"
                 >
                   {faq.answer}
                 </motion.div>

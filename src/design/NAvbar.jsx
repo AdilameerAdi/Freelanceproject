@@ -44,69 +44,71 @@ const navigate = useNavigate();
   };
 
   return (
-    <nav className="bg-[#FFDC00] shadow-lg fixed top-0 left-0 w-full z-10">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16 w-full">
-          {/* Desktop Menu */}
-          <ul className="hidden md:flex flex-1 justify-around items-center">
-            {menuItems.map((item) => (
-              <li
-                key={item}
-                onClick={() => handleClick(item)}
-                className="text-[#001F3F] font-medium cursor-pointer hover:text-[#0320f8] hover:text-xl transition-colors"
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
+   <nav className="bg-gradient-to-r from-yellow-400 via-orange-500 to-green-400 shadow-lg fixed top-0 left-0 w-full z-10">
 
-          {/* Admin + Staff + Hamburger */}
-          <div className="flex items-center w-full md:w-auto justify-between">
-            <div className="flex space-x-2">
-              {/* Admin Login button (route to /admin) */}
-              <Link
-                to="/admin"
-                className="bg-[#2ECC40] text-[#001F3F] font-medium px-4 py-1 rounded hover:bg-[#7FDBFF] transition-colors"
-              >
-                Admin Login
-              </Link>
-              
-              {/* Staff Login button (route to /staff-panel) */}
-              <Link
-                to="/staff-panel"
-                className="bg-[#FF851B] text-[#001F3F] font-medium px-4 py-1 rounded hover:bg-[#FFDC00] transition-colors"
-              >
-                Staff Login
-              </Link>
-            </div>
+  <div className="max-w-7xl mx-auto px-4">
+    <div className="flex justify-between items-center h-16 w-full">
+      {/* Desktop Menu */}
+      <ul className="hidden md:flex flex-1 justify-around items-center">
+        {menuItems.map((item) => (
+          <li
+            key={item}
+            onClick={() => handleClick(item)}
+            className="text-white font-medium cursor-pointer hover:text-yellow-300 transition-colors"
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
 
-            {/* Hamburger */}
-            <div className="md:hidden ml-auto">
-              <button
-                className="text-[#001F3F] text-2xl focus:outline-none"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                {isMobileMenuOpen ? "✕" : "☰"}
-              </button>
-            </div>
-          </div>
+      {/* Admin + Staff + Hamburger */}
+      <div className="flex items-center w-full md:w-auto justify-between">
+        <div className="flex space-x-2">
+          {/* Admin Login button */}
+          <Link
+            to="/admin"
+            className="bg-green-500 text-white font-medium px-4 py-1 rounded hover:bg-green-600 transition-colors"
+          >
+            Admin Login
+          </Link>
+
+          {/* Staff Login button */}
+          <Link
+            to="/staff-panel"
+            className="bg-orange-500 text-white font-medium px-4 py-1 rounded hover:bg-orange-600 transition-colors"
+          >
+            Staff Login
+          </Link>
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <ul className="md:hidden bg-[#f9fbfc]">
-            {menuItems.map((item) => (
-              <li
-                key={item}
-                onClick={() => handleClick(item)}
-                className="text-[#001F3F] px-4 py-2 hover:text-[#FFDC00] cursor-pointer transition-colors"
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-        )}
+        {/* Hamburger */}
+        <div className="md:hidden ml-auto">
+          <button
+            className="text-white text-2xl focus:outline-none"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? "✕" : "☰"}
+          </button>
+        </div>
       </div>
-    </nav>
+    </div>
+
+    {/* Mobile Menu */}
+    {isMobileMenuOpen && (
+      <ul className="md:hidden bg-gray-900">
+        {menuItems.map((item) => (
+          <li
+            key={item}
+            onClick={() => handleClick(item)}
+            className="text-white px-4 py-2 hover:text-yellow-300 cursor-pointer transition-colors"
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</nav>
+
   );
 }

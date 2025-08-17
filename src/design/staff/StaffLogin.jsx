@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { staffService } from "../../services/supabase";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react"; // optional back icon
 
 export default function StaffLogin({ onLoginSuccess }) {
   const [loginForm, setLoginForm] = useState({
@@ -8,6 +10,7 @@ export default function StaffLogin({ onLoginSuccess }) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,7 +29,7 @@ export default function StaffLogin({ onLoginSuccess }) {
         setError("Invalid username or password. Please try again.");
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       setError("Login failed. Please try again.");
     } finally {
       setLoading(false);
@@ -36,6 +39,16 @@ export default function StaffLogin({ onLoginSuccess }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-8">
+
+        {/* Back Button */}
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center text-purple-200 hover:text-white transition mb-4"
+        >
+          <ArrowLeft className="mr-2 h-5 w-5" />
+          Back
+        </button>
+
         <div className="text-center">
           <h1 className="text-4xl font-bold text-white mb-2">👤 Staff Login</h1>
           <p className="text-purple-200">Access your staff panel</p>
@@ -57,7 +70,9 @@ export default function StaffLogin({ onLoginSuccess }) {
                 type="text"
                 required
                 value={loginForm.username}
-                onChange={(e) => setLoginForm({...loginForm, username: e.target.value})}
+                onChange={(e) =>
+                  setLoginForm({ ...loginForm, username: e.target.value })
+                }
                 className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 placeholder="Enter your username"
               />
@@ -71,7 +86,9 @@ export default function StaffLogin({ onLoginSuccess }) {
                 type="password"
                 required
                 value={loginForm.password}
-                onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                onChange={(e) =>
+                  setLoginForm({ ...loginForm, password: e.target.value })
+                }
                 className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 placeholder="Enter your password"
               />
@@ -95,7 +112,8 @@ export default function StaffLogin({ onLoginSuccess }) {
 
           <div className="mt-6 text-center">
             <p className="text-purple-200 text-sm">
-              Don't have an account? Contact an administrator to get staff credentials.
+              Don't have an account? Contact an administrator to get staff
+              credentials.
             </p>
           </div>
         </div>
