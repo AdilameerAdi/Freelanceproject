@@ -151,7 +151,7 @@ export default function Support() {
           onClick={() => setActiveTab("pending")}
           className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-bold tracking-wide transition-all text-sm sm:text-base ${
             activeTab === "pending"
-              ? "bg-gradient-to-r from-yellow-400 to-orange-500 text-black shadow-lg shadow-yellow-500/40"
+              ? "bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg shadow-yellow-500/40"
               : "bg-gray-800 text-gray-300 hover:from-gray-700 hover:to-gray-600 hover:bg-gradient-to-r"
           }`}
         >
@@ -162,7 +162,7 @@ export default function Support() {
           onClick={() => setActiveTab("solved")}
           className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-bold tracking-wide transition-all text-sm sm:text-base ${
             activeTab === "solved"
-              ? "bg-gradient-to-r from-green-400 to-emerald-600 text-black shadow-lg shadow-green-500/40"
+              ? "bg-gradient-to-r from-green-400 to-emerald-600 text-white shadow-lg shadow-green-500/40"
               : "bg-gray-800 text-gray-300 hover:from-gray-700 hover:to-gray-600 hover:bg-gradient-to-r"
           }`}
         >
@@ -286,8 +286,8 @@ export default function Support() {
 
         {/* Pending Problems */}
         {activeTab === "pending" && (
-          <div className="bg-gradient-to-br from-yellow-900 via-orange-900 to-gray-900 border border-yellow-500/60 p-4 sm:p-6 rounded-2xl shadow-2xl shadow-yellow-500/20">
-            <h2 className="text-xl sm:text-2xl font-bold mb-4 text-yellow-300 flex items-center gap-2">
+          <div className="bg-gradient-to-br from-yellow-900 via-orange-900 to-gray-900 border border-yellow-500/60 p-4 sm:p-6 rounded-2xl shadow-2xl shadow-blue-500/20">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4 text-blue-300 flex items-center gap-2">
               <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" /> Pending Tickets
             </h2>
             {pending.length > 0 ? (

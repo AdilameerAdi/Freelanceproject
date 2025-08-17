@@ -249,7 +249,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
               
               <div className="bg-white p-6 rounded-lg shadow-lg">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                  <div className="p-3 rounded-full bg-blue-100 text-blue-600">
                     ⭐
                   </div>
                   <div className="ml-4">
@@ -664,7 +664,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
                   <button className="w-full text-left p-3 rounded-lg bg-green-50 hover:bg-green-100 transition">
                     👥 View Online Users
                   </button>
-                  <button className="w-full text-left p-3 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition">
+                  <button className="w-full text-left p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition">
                     ⚠️ Report Issue
                   </button>
                   <button className="w-full text-left p-3 rounded-lg bg-purple-50 hover:bg-purple-100 transition">
@@ -708,7 +708,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
                     </>
                   )}
                   {staffMember.role.includes('Balance') && (
-                    <button className="w-full text-left p-3 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition">
+                    <button className="w-full text-left p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition">
                       ⚖️ Balance Tools
                     </button>
                   )}
