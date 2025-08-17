@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { postService } from "../../services/supabase";
+import { postService, imageUploadService } from "../../services/supabase";
 
 export default function StaffPanel({ staffMember, onLogout }) {
   const [activeSection, setActiveSection] = useState("dashboard");
   const [postForm, setPostForm] = useState({
     title: "",
     content: "",
-    excerpt: ""
+    excerpt: "",
+    image_url: ""
   });
+  const [postImageFile, setPostImageFile] = useState(null);
+  const [postImagePreview, setPostImagePreview] = useState("");
+  const [editImageFile, setEditImageFile] = useState(null);
+  const [editImagePreview, setEditImagePreview] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [submittingPost, setSubmittingPost] = useState(false);
   const [postMessage, setPostMessage] = useState("");
   
@@ -18,8 +24,61 @@ export default function StaffPanel({ staffMember, onLogout }) {
   const [editForm, setEditForm] = useState({
     title: "",
     content: "",
-    excerpt: ""
+    excerpt: "",
+    image_url: ""
   });
+
+  const handlePostImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setPostMessage("Please select an image file");
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setPostMessage("Image size should be less than 5MB");
+        return;
+      }
+      
+      setPostImageFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPostImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setPostMessage("Please select an image file");
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setPostMessage("Image size should be less than 5MB");
+        return;
+      }
+      
+      setEditImageFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleCreatePost = async (e) => {
     e.preventDefault();
@@ -29,11 +88,26 @@ export default function StaffPanel({ staffMember, onLogout }) {
     }
 
     setSubmittingPost(true);
+    setUploadingImage(true);
     setPostMessage("");
 
     try {
-      await postService.createPost(postForm, staffMember);
-      setPostForm({ title: "", content: "", excerpt: "" });
+      // Upload image if selected
+      let imageUrl = postForm.image_url;
+      if (postImageFile) {
+        try {
+          imageUrl = await imageUploadService.uploadImage(postImageFile);
+        } catch (uploadError) {
+          console.error('Error uploading image:', uploadError);
+          // Continue without image if upload fails
+          imageUrl = "";
+        }
+      }
+      
+      await postService.createPost({...postForm, image_url: imageUrl}, staffMember);
+      setPostForm({ title: "", content: "", excerpt: "", image_url: "" });
+      setPostImageFile(null);
+      setPostImagePreview("");
       setPostMessage("✅ Post created successfully! It will appear in the news section.");
       // Refresh posts if we're on the manage posts section
       if (activeSection === "managePosts") {
@@ -44,6 +118,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
       setPostMessage("❌ Failed to create post. Please try again.");
     } finally {
       setSubmittingPost(false);
+      setUploadingImage(false);
     }
   };
 
@@ -82,14 +157,19 @@ export default function StaffPanel({ staffMember, onLogout }) {
     setEditForm({
       title: post.title,
       content: post.content,
-      excerpt: post.excerpt || ""
+      excerpt: post.excerpt || "",
+      image_url: post.image_url || ""
     });
+    setEditImageFile(null);
+    setEditImagePreview(post.image_url || "");
   };
 
   // Cancel editing
   const cancelEditing = () => {
     setEditingPost(null);
-    setEditForm({ title: "", content: "", excerpt: "" });
+    setEditForm({ title: "", content: "", excerpt: "", image_url: "" });
+    setEditImageFile(null);
+    setEditImagePreview("");
   };
 
   // Update post
@@ -99,15 +179,32 @@ export default function StaffPanel({ staffMember, onLogout }) {
       return;
     }
 
+    setUploadingImage(true);
+
     try {
-      await postService.updatePost(postId, editForm);
+      // Upload new image if selected
+      let imageUrl = editForm.image_url;
+      if (editImageFile) {
+        try {
+          imageUrl = await imageUploadService.uploadImage(editImageFile);
+        } catch (uploadError) {
+          console.error('Error uploading image:', uploadError);
+          // Keep existing image if upload fails
+        }
+      }
+      
+      await postService.updatePost(postId, {...editForm, image_url: imageUrl});
       setPostMessage("✅ Post updated successfully!");
       setEditingPost(null);
-      setEditForm({ title: "", content: "", excerpt: "" });
+      setEditForm({ title: "", content: "", excerpt: "", image_url: "" });
+      setEditImageFile(null);
+      setEditImagePreview("");
       loadUserPosts(); // Refresh the posts list
     } catch (error) {
       console.error('Error updating post:', error);
       setPostMessage("❌ Failed to update post. Please try again.");
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -286,6 +383,52 @@ export default function StaffPanel({ staffMember, onLogout }) {
                 </div>
 
                 <div>
+                  <label className="block text-sm font-medium mb-2">Post Image (Optional)</label>
+                  <div className="flex items-center space-x-4">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePostImageSelect}
+                      className="hidden"
+                      id="staff-post-image-upload"
+                      disabled={submittingPost || uploadingImage}
+                    />
+                    <label
+                      htmlFor="staff-post-image-upload"
+                      className={`px-4 py-2 bg-blue-500 text-white rounded-lg cursor-pointer transition ${
+                        submittingPost || uploadingImage ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-blue-600'
+                      }`}
+                    >
+                      Choose Image
+                    </label>
+                    {postImageFile && (
+                      <span className="text-sm text-gray-600">{postImageFile.name}</span>
+                    )}
+                    {postImageFile && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPostImageFile(null);
+                          setPostImagePreview("");
+                        }}
+                        className="text-red-500 hover:text-red-700"
+                        disabled={submittingPost}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  {postImagePreview && (
+                    <div className="mt-2">
+                      <img src={postImagePreview} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
+                    </div>
+                  )}
+                  {uploadingImage && (
+                    <p className="text-sm text-blue-600 mt-2">Uploading image...</p>
+                  )}
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium mb-2">Post Content</label>
                   <textarea
                     value={postForm.content}
@@ -387,6 +530,51 @@ export default function StaffPanel({ staffMember, onLogout }) {
                               onChange={(e) => setEditForm({...editForm, excerpt: e.target.value})}
                               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Post Image (Optional)</label>
+                            <div className="flex items-center space-x-4">
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleEditImageSelect}
+                                className="hidden"
+                                id={`staff-edit-image-upload-${post.id}`}
+                                disabled={uploadingImage}
+                              />
+                              <label
+                                htmlFor={`staff-edit-image-upload-${post.id}`}
+                                className={`px-4 py-2 bg-blue-500 text-white rounded-lg cursor-pointer transition ${
+                                  uploadingImage ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-blue-600'
+                                }`}
+                              >
+                                Change Image
+                              </label>
+                              {editImageFile && (
+                                <span className="text-sm text-gray-600">{editImageFile.name}</span>
+                              )}
+                              {(editImageFile || editImagePreview) && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditImageFile(null);
+                                    setEditImagePreview("");
+                                    setEditForm({...editForm, image_url: ""});
+                                  }}
+                                  className="text-red-500 hover:text-red-700"
+                                >
+                                  Remove
+                                </button>
+                              )}
+                            </div>
+                            {editImagePreview && (
+                              <div className="mt-2">
+                                <img src={editImagePreview} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
+                              </div>
+                            )}
+                            {uploadingImage && (
+                              <p className="text-sm text-blue-600 mt-2">Uploading image...</p>
+                            )}
                           </div>
                           <div>
                             <label className="block text-sm font-medium mb-2">Content</label>

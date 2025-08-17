@@ -5,6 +5,78 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
+// Image upload service
+export const imageUploadService = {
+  // Upload image to Supabase Storage
+  async uploadImage(file) {
+    try {
+      // Generate unique file name
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`
+      const filePath = `post-images/${fileName}`
+
+      // Upload file to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (error) {
+        // If bucket doesn't exist, try creating it first
+        if (error.message.includes('not found')) {
+          // Create bucket
+          const { error: createError } = await supabase.storage.createBucket('images', {
+            public: true
+          })
+          
+          if (!createError || createError.message.includes('already exists')) {
+            // Retry upload
+            const { data: retryData, error: retryError } = await supabase.storage
+              .from('images')
+              .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false
+              })
+            
+            if (retryError) throw retryError
+            
+            // Get public URL
+            const { data: urlData } = supabase.storage
+              .from('images')
+              .getPublicUrl(filePath)
+            
+            return urlData.publicUrl
+          }
+          throw createError
+        }
+        throw error
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('images')
+        .getPublicUrl(filePath)
+
+      return urlData.publicUrl
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      throw error
+    }
+  },
+
+  // Convert file to base64 (alternative if storage doesn't work)
+  async fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = error => reject(error)
+    })
+  }
+}
+
 // Events related database operations
 export const eventService = {
   // Get all events
@@ -378,6 +450,7 @@ export const postService = {
         excerpt: postData.excerpt || postData.content.substring(0, 150) + '...',
         author_name: authorData.name,
         author_avatar: authorData.avatar,
+        image_url: postData.image_url || null, // Add image URL support
         likes_count: 0,
         is_trending: false,
         is_published: true,
@@ -442,6 +515,7 @@ export const postService = {
         title: postData.title,
         content: postData.content,
         excerpt: postData.excerpt || postData.content.substring(0, 150) + '...',
+        image_url: postData.image_url !== undefined ? postData.image_url : undefined, // Update image URL if provided
         updated_at: new Date().toISOString()
       }
 

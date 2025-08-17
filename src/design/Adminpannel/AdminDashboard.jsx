@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { eventService, staffService, supportService, updateService, postService } from "../../services/supabase";
+import { eventService, staffService, supportService, updateService, postService, imageUploadService } from "../../services/supabase";
 
 export default function AdminDashboard({ staffMembers, setStaffMembers, events, setEvents, loadEvents, loadStaff }) {
   const [activeSection, setActiveSection] = useState("events");
@@ -50,8 +50,12 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
   const [postForm, setPostForm] = useState({
     title: "",
     content: "",
-    excerpt: ""
+    excerpt: "",
+    image_url: ""
   });
+  const [postImageFile, setPostImageFile] = useState(null);
+  const [postImagePreview, setPostImagePreview] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [editingPostId, setEditingPostId] = useState(null);
   const [showPostForm, setShowPostForm] = useState(false);
   const [postsLoading, setPostsLoading] = useState(false);
@@ -216,13 +220,27 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
     }
 
     try {
+      setUploadingImage(true);
+      
+      // Upload image if selected
+      let imageUrl = postForm.image_url;
+      if (postImageFile) {
+        try {
+          imageUrl = await imageUploadService.uploadImage(postImageFile);
+        } catch (uploadError) {
+          console.error('Error uploading image:', uploadError);
+          // Continue without image if upload fails
+          imageUrl = "";
+        }
+      }
+      
       const authorData = {
         id: null, // Admin posts don't need staff table reference
         name: "Admin", // This should be the current admin's name
         avatar: "https://i.pravatar.cc/100?img=admin" // Admin avatar
       };
       
-      await postService.createPost(postForm, authorData, 'admin');
+      await postService.createPost({...postForm, image_url: imageUrl}, authorData, 'admin');
       await loadPosts();
       resetPostForm();
       alert("News post created successfully!");
@@ -230,6 +248,8 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
       console.error('Error creating post:', error);
       console.error('Error details:', error.message);
       alert(`Failed to create post: ${error.message || 'Please try again.'}`);
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -268,12 +288,41 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
     setShowPostForm(true);
   };
 
+  const handlePostImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should be less than 5MB');
+        return;
+      }
+      
+      setPostImageFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPostImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const resetPostForm = () => {
     setPostForm({
       title: "",
       content: "",
-      excerpt: ""
+      excerpt: "",
+      image_url: ""
     });
+    setPostImageFile(null);
+    setPostImagePreview("");
     setEditingPostId(null);
     setShowPostForm(false);
   };
@@ -916,6 +965,48 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Brief description (auto-generated if left empty)"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Post Image (Optional)</label>
+                    <div className="flex items-center space-x-4">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePostImageSelect}
+                        className="hidden"
+                        id="admin-post-image-upload"
+                        disabled={uploadingImage}
+                      />
+                      <label
+                        htmlFor="admin-post-image-upload"
+                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer transition"
+                      >
+                        Choose Image
+                      </label>
+                      {postImageFile && (
+                        <span className="text-sm text-gray-600">{postImageFile.name}</span>
+                      )}
+                      {postImageFile && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPostImageFile(null);
+                            setPostImagePreview("");
+                          }}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    {postImagePreview && (
+                      <div className="mt-2">
+                        <img src={postImagePreview} alt="Preview" className="w-32 h-32 object-cover rounded-lg" />
+                      </div>
+                    )}
+                    {uploadingImage && (
+                      <p className="text-sm text-blue-600 mt-2">Uploading image...</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">Post Content</label>

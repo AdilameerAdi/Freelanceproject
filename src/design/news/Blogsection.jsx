@@ -223,10 +223,10 @@ export default function CommunityHub() {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full mt-10 bg-gradient-to-b from-[#0a0f1f] via-[#0b132b] to-black text-white font-sans flex items-center justify-center">
+      <div className="min-h-screen w-full mt-10 bg-gradient-to-br from-gray-950 via-black to-gray-900 text-white font-sans flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto mb-4"></div>
-          <p>Loading posts...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto mb-4"></div>
+          <p className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">Loading posts...</p>
         </div>
       </div>
     );
@@ -234,9 +234,9 @@ export default function CommunityHub() {
 
   if (posts.length === 0) {
     return (
-      <div className="min-h-screen w-full mt-10 bg-gradient-to-b from-[#0a0f1f] via-[#0b132b] to-black text-white font-sans">
-        <div className="w-full bg-gradient-to-r from-purple-600/40 to-cyan-600/40 py-12 text-center shadow-lg">
-          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
+      <div className="min-h-screen w-full mt-10 bg-gradient-to-br from-gray-950 via-black to-gray-900 text-white font-sans">
+        <div className="w-full bg-gradient-to-r from-yellow-500/20 via-orange-500/20 to-green-500/20 backdrop-blur-sm py-12 text-center shadow-lg border-b border-yellow-500/20">
+          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-400 to-green-400">
             🎮 Community Hub
           </h1>
           <p className="text-gray-300 mt-2 text-lg">
@@ -252,10 +252,15 @@ export default function CommunityHub() {
   }
 
   return (
-    <div className="min-h-screen w-full mt-10 bg-gradient-to-b from-[#0a0f1f] via-[#0b132b] to-black text-white font-sans">
+    <div className="min-h-screen w-full mt-10 bg-gradient-to-br from-gray-950 via-black to-gray-900 text-white font-sans relative overflow-hidden">
+      {/* Background Glow Effects */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute top-1/2 -right-40 w-96 h-96 bg-green-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
+      
       {/* Banner / Hero Section */}
-      <div className="w-full bg-gradient-to-r from-purple-600/40 to-cyan-600/40 py-12 text-center shadow-lg">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
+      <div className="w-full bg-gradient-to-r from-yellow-500/20 via-orange-500/20 to-green-500/20 backdrop-blur-sm py-12 text-center shadow-lg border-b border-yellow-500/20">
+        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-400 to-green-400">
           🎮 Community Hub
         </h1>
         <p className="text-gray-300 mt-2 text-lg">
@@ -269,9 +274,9 @@ export default function CommunityHub() {
           
           {/* Right Column - Trending Sidebar (appears first on mobile) */}
           <div className="lg:col-span-1 order-1 lg:order-2">
-            <div className="bg-[#111a2c] border border-purple-500/40 rounded-2xl shadow-2xl p-6 lg:sticky lg:mt-14">
-              <h2 className="text-xl font-bold text-red-400 mb-6 flex items-center gap-2">
-                <Flame size={20} /> Trending Posts
+            <div className="bg-gradient-to-br from-gray-800/50 via-gray-900/50 to-black/50 backdrop-blur-sm border border-orange-500/30 rounded-2xl shadow-2xl p-6 lg:sticky lg:mt-14">
+              <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-400 mb-6 flex items-center gap-2">
+                <Flame size={20} className="text-orange-400" /> Trending Posts
               </h2>
               
               {trendingPosts.length === 0 ? (
@@ -281,22 +286,22 @@ export default function CommunityHub() {
                   {trendingPosts.map((post, index) => (
                     <div 
                       key={post.id} 
-                      className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/30 rounded-lg p-4 cursor-pointer hover:from-red-900/30 hover:to-orange-900/30 transition"
+                      className="bg-gradient-to-r from-orange-900/20 to-yellow-900/20 border border-orange-500/30 rounded-lg p-4 cursor-pointer hover:from-orange-900/30 hover:to-yellow-900/30 hover:border-orange-400/50 transition group"
                       onClick={() => openPostModal(post)}
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">#{index + 1}</span>
-                        <Flame size={14} className="text-red-400" />
-                        <span className="text-red-400 text-xs font-semibold">{post.likes_count} likes</span>
+                        <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">#{index + 1}</span>
+                        <Flame size={14} className="text-orange-400" />
+                        <span className="text-orange-400 text-xs font-semibold">{post.likes_count} likes</span>
                       </div>
-                      <h4 className="text-white font-semibold text-sm mb-2 line-clamp-2">{post.title}</h4>
+                      <h4 className="text-white font-semibold text-sm mb-2 line-clamp-2 group-hover:text-yellow-300 transition">{post.title}</h4>
                       <div className="flex items-center gap-2">
                         <img
                           src={post.author_avatar || 'https://i.pravatar.cc/20?img=1'}
                           alt={post.author_name}
-                          className="w-6 h-6 rounded-full border border-purple-400/50"
+                          className="w-6 h-6 rounded-full border border-green-400/50"
                         />
-                        <span className="text-purple-400 text-xs">{post.author_name}</span>
+                        <span className="text-green-400 text-xs">{post.author_name}</span>
                       </div>
                     </div>
                   ))}
@@ -307,35 +312,54 @@ export default function CommunityHub() {
 
           {/* Left Column - All Posts (appears second on mobile) */}
           <div className="lg:col-span-3 space-y-6 order-2 lg:order-1">
-            <h2 className="text-2xl font-bold text-purple-400 mb-6">Latest Posts</h2>
+            <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-green-400 mb-6">Latest Posts</h2>
             
             {posts.map((post) => (
               <div 
                 key={post.id} 
-                className="bg-[#111a2c] border border-purple-500/40 rounded-2xl shadow-2xl p-6 hover:shadow-purple-500/30 transition relative overflow-hidden cursor-pointer"
+                className="bg-gradient-to-br from-gray-800/50 via-gray-900/50 to-black/50 backdrop-blur-sm border border-yellow-500/30 rounded-2xl shadow-2xl hover:shadow-yellow-500/20 hover:border-yellow-400/50 transition relative overflow-hidden cursor-pointer group"
                 onClick={() => openPostModal(post)}
               >
                 {/* Neon Background Glow */}
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-cyan-500/10 blur-3xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-orange-500/5 to-green-500/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-                <div className="relative">
-                  {/* Author Info */}
-                  <div className="flex items-center gap-3 mb-4">
+                <div className="relative grid grid-cols-4 h-full">
+                  {/* First Part - 1/4 width with gradient background, avatar, name, likes and comments */}
+                  <div className="col-span-1 bg-gradient-to-br from-yellow-500/20 via-orange-500/20 to-green-500/20 p-4 flex flex-col justify-center items-center text-center border-r border-yellow-500/30">
                     <img
-                      src={post.author_avatar || (post.author_type === 'admin' ? 'https://i.pravatar.cc/40?img=admin' : 'https://i.pravatar.cc/40?img=1')}
+                      src={post.author_avatar || (post.author_type === 'admin' ? 'https://i.pravatar.cc/60?img=admin' : 'https://i.pravatar.cc/60?img=1')}
                       alt={post.author_name}
-                      className="w-10 h-10 rounded-full border-2 border-purple-400/50"
+                      className="w-12 h-12 rounded-full border-2 border-green-400/50 mb-2"
                     />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="text-purple-400 font-semibold">{post.author_name}</p>
-                        {post.author_type === 'admin' && (
-                          <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded-full flex items-center gap-1">
-                            👑 Admin
-                          </span>
-                        )}
+                    <div className="flex items-center gap-1 mb-1">
+                      <p className="text-green-400 font-semibold text-sm">{post.author_name}</p>
+                      {post.author_type === 'admin' && (
+                        <span className="text-yellow-400 text-xs">👑</span>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-1 text-xs">
+                      <div className="flex items-center justify-center gap-1 text-yellow-300">
+                        <ThumbsUp size={12} /> 
+                        <span>{post.likes_count || 0}</span>
                       </div>
-                      <p className="text-gray-400 text-sm">
+                      <div className="flex items-center justify-center gap-1 text-orange-300">
+                        <MessageCircle size={12} /> 
+                        <span>Comments</span>
+                      </div>
+                    </div>
+                    {post.is_trending && (
+                      <div className="mt-2">
+                        <span className="px-2 py-1 bg-gradient-to-r from-orange-500/30 to-red-500/30 text-orange-400 text-xs rounded-full flex items-center gap-1">
+                          <Flame size={10} /> Hot
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Second, Third, and Fourth Parts - 3/4 width combined with post name and content */}
+                  <div className="col-span-3 p-6 flex flex-col justify-center">
+                    <div className="mb-2">
+                      <p className="text-gray-400 text-xs">
                         {new Date(post.created_at).toLocaleDateString('en-US', { 
                           year: 'numeric', 
                           month: 'short', 
@@ -345,34 +369,38 @@ export default function CommunityHub() {
                         })}
                       </p>
                     </div>
-                    {post.is_trending && (
-                      <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded-full flex items-center gap-1">
-                        <Flame size={12} /> Trending
-                      </span>
+                    
+                    {/* Post Image - Centered */}
+                    {post.image_url && (
+                      <div className="flex justify-center mb-4">
+                        <img 
+                          src={post.image_url} 
+                          alt={post.title}
+                          className="max-w-full h-48 object-cover rounded-lg shadow-lg"
+                          onError={(e) => e.target.style.display = 'none'}
+                        />
+                      </div>
                     )}
-                  </div>
+                    
+                    {/* Post Title */}
+                    <h3 className="text-xl font-bold text-white mb-3">{post.title}</h3>
+                    
+                    {/* Post Content */}
+                    <p className="text-gray-300 leading-relaxed mb-4 flex-1">
+                      {post.content.length > 200 ? post.content.substring(0, 200) + '...' : post.content}
+                    </p>
 
-                  {/* Post Title */}
-                  <h3 className="text-xl font-bold text-white mb-3">{post.title}</h3>
-                  
-                  {/* Post Excerpt */}
-                  <p className="text-gray-300 leading-relaxed mb-4">
-                    {post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content}
-                  </p>
-
-                  {/* Post Actions */}
-                  <div className="flex items-center gap-4 text-sm text-gray-400">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        togglePostLike(post.id);
-                      }}
-                      className="flex items-center gap-1 hover:text-purple-400 transition"
-                    >
-                      <ThumbsUp size={16} /> {post.likes_count || 0}
-                    </button>
-                    <div className="flex items-center gap-1">
-                      <MessageCircle size={16} /> Comments
+                    {/* Action Button */}
+                    <div className="flex items-center justify-end">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          togglePostLike(post.id);
+                        }}
+                        className="text-yellow-400 hover:text-yellow-300 group-hover:text-green-400 transition text-sm font-medium"
+                      >
+                        Read More →
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -393,7 +421,7 @@ export default function CommunityHub() {
                     className={`px-4 py-2 rounded-lg border transition ${
                       currentPage === 1
                         ? 'border-gray-600 text-gray-600 cursor-not-allowed'
-                        : 'border-purple-500/40 text-purple-400 hover:bg-purple-600/20 hover:border-purple-400'
+                        : 'border-yellow-500/40 text-yellow-400 hover:bg-yellow-600/20 hover:border-yellow-400'
                     }`}
                   >
                     Previous
@@ -408,8 +436,8 @@ export default function CommunityHub() {
                           onClick={() => goToPage(page)}
                           className={`px-4 py-2 rounded-lg border transition ${
                             currentPage === page
-                              ? 'bg-purple-600 border-purple-400 text-white'
-                              : 'border-purple-500/40 text-purple-400 hover:bg-purple-600/20 hover:border-purple-400'
+                              ? 'bg-gradient-to-r from-yellow-500 to-orange-500 border-yellow-400 text-white'
+                              : 'border-green-500/40 text-green-400 hover:bg-green-600/20 hover:border-green-400'
                           }`}
                         >
                           {page}
@@ -424,7 +452,7 @@ export default function CommunityHub() {
                     className={`px-4 py-2 rounded-lg border transition ${
                       currentPage === totalPages
                         ? 'border-gray-600 text-gray-600 cursor-not-allowed'
-                        : 'border-purple-500/40 text-purple-400 hover:bg-purple-600/20 hover:border-purple-400'
+                        : 'border-yellow-500/40 text-yellow-400 hover:bg-yellow-600/20 hover:border-yellow-400'
                     }`}
                   >
                     Next
@@ -439,23 +467,23 @@ export default function CommunityHub() {
       {/* Post Modal */}
       {showModal && selectedPost && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0a0f1f] border border-purple-500/40 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
+          <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-yellow-500/40 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
             <div className="flex h-full">
               
               {/* Left Side - Post Content */}
-              <div className="flex-1 p-6 border-r border-purple-500/40">
+              <div className="flex-1 p-6 border-r border-yellow-500/30">
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-3">
                     <img
                       src={selectedPost.author_avatar || (selectedPost.author_type === 'admin' ? 'https://i.pravatar.cc/40?img=admin' : 'https://i.pravatar.cc/40?img=1')}
                       alt={selectedPost.author_name}
-                      className="w-12 h-12 rounded-full border-2 border-purple-400/50"
+                      className="w-12 h-12 rounded-full border-2 border-green-400/50"
                     />
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="text-purple-400 font-semibold">{selectedPost.author_name}</p>
+                        <p className="text-green-400 font-semibold">{selectedPost.author_name}</p>
                         {selectedPost.author_type === 'admin' && (
-                          <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded-full flex items-center gap-1">
+                          <span className="px-2 py-1 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-400 text-xs rounded-full flex items-center gap-1">
                             👑 Admin
                           </span>
                         )}
@@ -480,18 +508,28 @@ export default function CommunityHub() {
                 </div>
 
                 <h2 className="text-2xl font-bold text-white mb-4">{selectedPost.title}</h2>
+                {selectedPost.image_url && (
+                  <div className="mb-4">
+                    <img 
+                      src={selectedPost.image_url} 
+                      alt={selectedPost.title}
+                      className="w-full max-h-64 object-contain rounded-lg"
+                      onError={(e) => e.target.style.display = 'none'}
+                    />
+                  </div>
+                )}
                 <div className="text-gray-300 leading-relaxed mb-6 max-h-64 overflow-y-auto">
                   {selectedPost.content}
                 </div>
 
-                <div className="flex items-center gap-6 pt-4 border-t border-purple-500/40">
+                <div className="flex items-center gap-6 pt-4 border-t border-yellow-500/30">
                   <button
                     onClick={() => togglePostLike(selectedPost.id)}
-                    className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition"
+                    className="flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition"
                   >
                     <ThumbsUp size={20} /> {selectedPost.likes_count || 0} Likes
                   </button>
-                  <div className="flex items-center gap-2 text-gray-400">
+                  <div className="flex items-center gap-2 text-orange-400">
                     <MessageCircle size={20} /> {comments.length} Comments
                   </div>
                 </div>
@@ -499,15 +537,15 @@ export default function CommunityHub() {
 
               {/* Right Side - Comments */}
               <div className="w-1/2 flex flex-col">
-                <div className="p-6 border-b border-purple-500/40">
-                  <h3 className="text-lg font-semibold text-white">Comments</h3>
+                <div className="p-6 border-b border-yellow-500/30">
+                  <h3 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">Comments</h3>
                 </div>
 
                 {/* Comments List */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4">
                   {commentsLoading ? (
                     <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400 mx-auto mb-4"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400 mx-auto mb-4"></div>
                       <p className="text-gray-400">Loading comments...</p>
                     </div>
                   ) : comments.length === 0 ? (
@@ -516,16 +554,16 @@ export default function CommunityHub() {
                     </div>
                   ) : (
                     comments.map((comment) => (
-                      <div key={comment.id} className="bg-[#111a2c] rounded-lg p-4">
+                      <div key={comment.id} className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 border border-green-500/20 rounded-lg p-4">
                         <div className="flex items-start gap-3">
                           <img
                             src={`https://api.dicebear.com/7.x/bottts/svg?seed=${comment.user_name}`}
                             alt={comment.user_name}
-                            className="w-8 h-8 rounded-full border border-purple-400/50"
+                            className="w-8 h-8 rounded-full border border-green-400/50"
                           />
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-purple-400 font-semibold text-sm">{comment.user_name}</span>
+                              <span className="text-green-400 font-semibold text-sm">{comment.user_name}</span>
                               <span className="text-gray-500 text-xs">
                                 {new Date(comment.created_at).toLocaleDateString('en-US', { 
                                   month: 'short', 
@@ -550,19 +588,19 @@ export default function CommunityHub() {
                 </div>
 
                 {/* Comment Input */}
-                <div className="p-6 border-t border-purple-500/40">
+                <div className="p-6 border-t border-yellow-500/30">
                   <div className="flex gap-3">
                     <img
                       src={`https://api.dicebear.com/7.x/bottts/svg?seed=${userName}`}
                       alt={userName}
-                      className="w-8 h-8 rounded-full border border-purple-400/50"
+                      className="w-8 h-8 rounded-full border border-green-400/50"
                     />
                     <div className="flex-1">
                       <textarea
                         value={commentText}
                         onChange={(e) => setCommentText(e.target.value)}
                         placeholder="Write a comment..."
-                        className="w-full bg-[#111a2c] border border-purple-500/40 rounded-lg px-3 py-2 text-white placeholder-gray-400 text-sm resize-none focus:outline-none focus:border-purple-400"
+                        className="w-full bg-gray-800/50 border border-green-500/40 rounded-lg px-3 py-2 text-white placeholder-gray-400 text-sm resize-none focus:outline-none focus:border-green-400"
                         rows="2"
                       />
                       <div className="flex justify-between items-center mt-2">
@@ -570,7 +608,7 @@ export default function CommunityHub() {
                         <button
                           onClick={handleCommentSubmit}
                           disabled={!commentText.trim()}
-                          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed px-4 py-2 rounded-lg text-white text-sm transition"
+                          className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed px-4 py-2 rounded-lg text-white text-sm transition"
                         >
                           <Send size={14} /> Post
                         </button>
