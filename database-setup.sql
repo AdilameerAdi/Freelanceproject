@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS posts (
   title TEXT NOT NULL,
   content TEXT NOT NULL,
   excerpt TEXT,
+  image_url TEXT, -- URL for post image
   author_id BIGINT REFERENCES staff(id) ON DELETE SET NULL, -- Allow NULL for admin posts
   author_name TEXT NOT NULL,
   author_avatar TEXT,
@@ -70,17 +71,44 @@ CREATE TABLE IF NOT EXISTS posts (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Ensure author_type column exists (for existing installations)
+-- Ensure author_type and image_url columns exist (for existing installations)
 DO $$ 
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
                  WHERE table_name = 'posts' AND column_name = 'author_type') THEN
     ALTER TABLE posts ADD COLUMN author_type TEXT DEFAULT 'staff' CHECK (author_type IN ('staff', 'admin'));
   END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name = 'posts' AND column_name = 'image_url') THEN
+    ALTER TABLE posts ADD COLUMN image_url TEXT;
+  END IF;
 END $$;
 
 -- ========================================
--- 4. POST LIKES TABLE
+-- 4. IMAGES TABLE
+-- ========================================
+-- Table for tracking uploaded images (Supabase Storage integration)
+CREATE TABLE IF NOT EXISTS images (
+  id BIGSERIAL PRIMARY KEY,
+  filename TEXT NOT NULL, -- Original filename
+  storage_path TEXT NOT NULL UNIQUE, -- Path in Supabase Storage bucket
+  public_url TEXT NOT NULL, -- Public URL for accessing the image
+  file_size BIGINT, -- File size in bytes
+  file_type TEXT, -- MIME type (image/jpeg, image/png, etc.)
+  width INTEGER, -- Image width in pixels
+  height INTEGER, -- Image height in pixels
+  uploaded_by_type TEXT DEFAULT 'user' CHECK (uploaded_by_type IN ('admin', 'staff', 'user')),
+  uploaded_by_id BIGINT, -- Reference to staff.id if uploaded by staff/admin
+  uploaded_by_identifier TEXT, -- User identifier for anonymous uploads
+  related_post_id BIGINT REFERENCES posts(id) ON DELETE SET NULL, -- Link to post if used in post
+  is_active BOOLEAN DEFAULT true, -- For soft deletion
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ========================================
+-- 5. POST LIKES TABLE
 -- ========================================
 -- Table for tracking post likes from users
 CREATE TABLE IF NOT EXISTS post_likes (
@@ -92,7 +120,7 @@ CREATE TABLE IF NOT EXISTS post_likes (
 );
 
 -- ========================================
--- 5. POST COMMENTS TABLE
+-- 6. POST COMMENTS TABLE
 -- ========================================
 -- Table for managing comments on posts (with reply support)
 CREATE TABLE IF NOT EXISTS post_comments (
@@ -108,7 +136,7 @@ CREATE TABLE IF NOT EXISTS post_comments (
 );
 
 -- ========================================
--- 6. COMMENT LIKES TABLE
+-- 7. COMMENT LIKES TABLE
 -- ========================================
 -- Table for tracking comment likes from users
 CREATE TABLE IF NOT EXISTS comment_likes (
@@ -120,7 +148,7 @@ CREATE TABLE IF NOT EXISTS comment_likes (
 );
 
 -- ========================================
--- 7. SUPPORT TICKETS TABLE
+-- 8. SUPPORT TICKETS TABLE
 -- ========================================
 -- Table for managing user support requests
 CREATE TABLE IF NOT EXISTS support_tickets (
@@ -144,7 +172,7 @@ CREATE TABLE IF NOT EXISTS support_tickets (
 );
 
 -- ========================================
--- 8. UPDATES TABLE
+-- 9. UPDATES TABLE
 -- ========================================
 -- Table for managing game updates and version releases
 CREATE TABLE IF NOT EXISTS updates (
@@ -226,6 +254,7 @@ CREATE TRIGGER posts_generate_excerpt
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE staff ENABLE ROW LEVEL SECURITY;
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE post_likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE post_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comment_likes ENABLE ROW LEVEL SECURITY;
@@ -269,6 +298,13 @@ CREATE POLICY "Users can view own tickets" ON support_tickets
 CREATE POLICY "Users can create tickets" ON support_tickets
   FOR INSERT WITH CHECK (true);
 
+-- Images policies - public read access for active images
+CREATE POLICY "Public can view active images" ON images
+  FOR SELECT USING (is_active = true);
+
+CREATE POLICY "Users can upload images" ON images
+  FOR INSERT WITH CHECK (true);
+
 -- ========================================
 -- INDEXES FOR PERFORMANCE
 -- ========================================
@@ -282,6 +318,15 @@ CREATE INDEX IF NOT EXISTS idx_posts_is_published ON posts(is_published);
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_likes_count ON posts(likes_count DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_compound ON posts(is_published, author_type, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_posts_image_url ON posts(image_url);
+
+-- Images table indexes
+CREATE INDEX IF NOT EXISTS idx_images_storage_path ON images(storage_path);
+CREATE INDEX IF NOT EXISTS idx_images_uploaded_by_type ON images(uploaded_by_type);
+CREATE INDEX IF NOT EXISTS idx_images_uploaded_by_id ON images(uploaded_by_id);
+CREATE INDEX IF NOT EXISTS idx_images_related_post_id ON images(related_post_id);
+CREATE INDEX IF NOT EXISTS idx_images_is_active ON images(is_active);
+CREATE INDEX IF NOT EXISTS idx_images_created_at ON images(created_at DESC);
 
 -- Post interactions indexes
 CREATE INDEX IF NOT EXISTS idx_post_likes_post_id ON post_likes(post_id);
@@ -359,13 +404,14 @@ ORDER BY p.created_at DESC;
 -- 🎉 DATABASE SETUP COMPLETED SUCCESSFULLY!
 -- 
 -- This production-ready schema includes:
--- ✅ 8 Core Tables with proper relationships
+-- ✅ 9 Core Tables with proper relationships
 -- ✅ Data validation with CHECK constraints
 -- ✅ Automatic timestamp management
 -- ✅ Row Level Security (RLS) policies
 -- ✅ Performance-optimized indexes
 -- ✅ Useful database functions and triggers
 -- ✅ Views for common queries
+-- ✅ Image upload support with Supabase Storage
 -- ✅ Zero sample data (production ready)
 --
 -- DEPLOYMENT INSTRUCTIONS:
@@ -373,12 +419,14 @@ ORDER BY p.created_at DESC;
 -- 2. Paste into your Supabase SQL Editor
 -- 3. Run the script
 -- 4. Update your app's Supabase credentials in src/services/supabase.js
--- 5. Your application will work immediately!
+-- 5. Create the 'images' bucket in Supabase Storage (done automatically by app)
+-- 6. Your application will work immediately!
 --
 -- TABLES CREATED:
 -- 📅 events - Game events and announcements
 -- 👥 staff - Staff members and authentication
--- 📝 posts - News posts (staff and admin)
+-- 📝 posts - News posts (staff and admin) with image support
+-- 🖼️ images - Image upload tracking and management
 -- ❤️ post_likes - Post like tracking
 -- 💬 post_comments - Comment system with replies
 -- ❤️ comment_likes - Comment like tracking  
