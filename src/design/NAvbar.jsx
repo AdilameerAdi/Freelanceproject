@@ -94,7 +94,7 @@ const navigate = useNavigate();
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <ul className="md:hidden bg-[#7FDBFF]">
+          <ul className="md:hidden bg-[#f9fbfc]">
             {menuItems.map((item) => (
               <li
                 key={item}
