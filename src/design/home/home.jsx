@@ -14,9 +14,9 @@ export default function Home() {
   const loadLatestNews = async () => {
     try {
       setLoading(true);
-      // Get the top 3 latest posts
-      const posts = await postService.getPaginatedPosts(1, 3);
-      setLatestNews(posts);
+      // Get the top 3 latest admin posts only
+      const adminPosts = await postService.getAdminPosts(3);
+      setLatestNews(adminPosts);
     } catch (error) {
       console.error('Error loading latest news:', error);
       // Fallback to empty array if database fails

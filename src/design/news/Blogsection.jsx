@@ -322,12 +322,19 @@ export default function CommunityHub() {
                   {/* Author Info */}
                   <div className="flex items-center gap-3 mb-4">
                     <img
-                      src={post.author_avatar || 'https://i.pravatar.cc/40?img=1'}
+                      src={post.author_avatar || (post.author_type === 'admin' ? 'https://i.pravatar.cc/40?img=admin' : 'https://i.pravatar.cc/40?img=1')}
                       alt={post.author_name}
                       className="w-10 h-10 rounded-full border-2 border-purple-400/50"
                     />
                     <div className="flex-1">
-                      <p className="text-purple-400 font-semibold">{post.author_name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-purple-400 font-semibold">{post.author_name}</p>
+                        {post.author_type === 'admin' && (
+                          <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded-full flex items-center gap-1">
+                            👑 Admin
+                          </span>
+                        )}
+                      </div>
                       <p className="text-gray-400 text-sm">
                         {new Date(post.created_at).toLocaleDateString('en-US', { 
                           year: 'numeric', 
@@ -440,12 +447,19 @@ export default function CommunityHub() {
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-3">
                     <img
-                      src={selectedPost.author_avatar || 'https://i.pravatar.cc/40?img=1'}
+                      src={selectedPost.author_avatar || (selectedPost.author_type === 'admin' ? 'https://i.pravatar.cc/40?img=admin' : 'https://i.pravatar.cc/40?img=1')}
                       alt={selectedPost.author_name}
                       className="w-12 h-12 rounded-full border-2 border-purple-400/50"
                     />
                     <div>
-                      <p className="text-purple-400 font-semibold">{selectedPost.author_name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-purple-400 font-semibold">{selectedPost.author_name}</p>
+                        {selectedPost.author_type === 'admin' && (
+                          <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded-full flex items-center gap-1">
+                            👑 Admin
+                          </span>
+                        )}
+                      </div>
                       <p className="text-gray-400 text-sm">
                         {new Date(selectedPost.created_at).toLocaleDateString('en-US', { 
                           year: 'numeric', 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { postService } from "../../services/supabase";
 
 export default function StaffPanel({ staffMember, onLogout }) {
@@ -10,6 +10,16 @@ export default function StaffPanel({ staffMember, onLogout }) {
   });
   const [submittingPost, setSubmittingPost] = useState(false);
   const [postMessage, setPostMessage] = useState("");
+  
+  // Manage Posts state
+  const [userPosts, setUserPosts] = useState([]);
+  const [loadingPosts, setLoadingPosts] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
+  const [editForm, setEditForm] = useState({
+    title: "",
+    content: "",
+    excerpt: ""
+  });
 
   const handleCreatePost = async (e) => {
     e.preventDefault();
@@ -25,6 +35,10 @@ export default function StaffPanel({ staffMember, onLogout }) {
       await postService.createPost(postForm, staffMember);
       setPostForm({ title: "", content: "", excerpt: "" });
       setPostMessage("✅ Post created successfully! It will appear in the news section.");
+      // Refresh posts if we're on the manage posts section
+      if (activeSection === "managePosts") {
+        loadUserPosts();
+      }
     } catch (error) {
       console.error('Error creating post:', error);
       setPostMessage("❌ Failed to create post. Please try again.");
@@ -32,6 +46,77 @@ export default function StaffPanel({ staffMember, onLogout }) {
       setSubmittingPost(false);
     }
   };
+
+  // Load user's posts
+  const loadUserPosts = async () => {
+    try {
+      setLoadingPosts(true);
+      const posts = await postService.getPostsByAuthor(staffMember.id);
+      setUserPosts(posts);
+    } catch (error) {
+      console.error('Error loading user posts:', error);
+    } finally {
+      setLoadingPosts(false);
+    }
+  };
+
+  // Delete post
+  const handleDeletePost = async (postId) => {
+    if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      await postService.deletePost(postId, staffMember.id);
+      setPostMessage("✅ Post deleted successfully!");
+      loadUserPosts(); // Refresh the posts list
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      setPostMessage("❌ Failed to delete post. Please try again.");
+    }
+  };
+
+  // Start editing a post
+  const startEditing = (post) => {
+    setEditingPost(post.id);
+    setEditForm({
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt || ""
+    });
+  };
+
+  // Cancel editing
+  const cancelEditing = () => {
+    setEditingPost(null);
+    setEditForm({ title: "", content: "", excerpt: "" });
+  };
+
+  // Update post
+  const handleUpdatePost = async (postId) => {
+    if (!editForm.title.trim() || !editForm.content.trim()) {
+      alert("Please fill in both title and content.");
+      return;
+    }
+
+    try {
+      await postService.updatePost(postId, editForm);
+      setPostMessage("✅ Post updated successfully!");
+      setEditingPost(null);
+      setEditForm({ title: "", content: "", excerpt: "" });
+      loadUserPosts(); // Refresh the posts list
+    } catch (error) {
+      console.error('Error updating post:', error);
+      setPostMessage("❌ Failed to update post. Please try again.");
+    }
+  };
+
+  // Load user posts when entering managePosts section
+  useEffect(() => {
+    if (activeSection === "managePosts") {
+      loadUserPosts();
+    }
+  }, [activeSection]);
 
   const renderSection = () => {
     switch (activeSection) {
@@ -250,6 +335,133 @@ export default function StaffPanel({ staffMember, onLogout }) {
           </div>
         );
 
+      case "managePosts":
+        return (
+          <div>
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">Manage My Posts</h2>
+            <p className="text-gray-600 mb-6">
+              View, edit, and delete your published posts.
+            </p>
+
+            {postMessage && (
+              <div className={`mb-4 p-3 rounded-lg ${
+                postMessage.includes('✅') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              }`}>
+                {postMessage}
+              </div>
+            )}
+
+            {loadingPosts ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading your posts...</p>
+              </div>
+            ) : userPosts.length === 0 ? (
+              <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+                <p className="text-gray-600 text-lg">You haven't created any posts yet.</p>
+                <p className="text-gray-500 text-sm mt-2">Go to "Create Posts" to write your first post!</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {userPosts.map((post) => (
+                  <div key={post.id} className="bg-white rounded-lg shadow-lg p-6">
+                    {editingPost === post.id ? (
+                      // Edit Mode
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Edit Post</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Title</label>
+                            <input
+                              type="text"
+                              value={editForm.title}
+                              onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Excerpt</label>
+                            <input
+                              type="text"
+                              value={editForm.excerpt}
+                              onChange={(e) => setEditForm({...editForm, excerpt: e.target.value})}
+                              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Content</label>
+                            <textarea
+                              value={editForm.content}
+                              onChange={(e) => setEditForm({...editForm, content: e.target.value})}
+                              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              rows="8"
+                            />
+                          </div>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => handleUpdatePost(post.id)}
+                              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                            >
+                              Save Changes
+                            </button>
+                            <button
+                              onClick={cancelEditing}
+                              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      // View Mode
+                      <div>
+                        <div className="flex justify-between items-start mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-gray-800 mb-2">{post.title}</h3>
+                            <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                              <span>Created: {new Date(post.created_at).toLocaleDateString()}</span>
+                              <span>👍 {post.likes_count || 0} likes</span>
+                              {post.is_trending && (
+                                <span className="px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs">
+                                  🔥 Trending
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex gap-2 ml-4">
+                            <button
+                              onClick={() => startEditing(post)}
+                              className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+                            >
+                              ✏️ Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeletePost(post.id)}
+                              className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
+                            >
+                              🗑️ Delete
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-gray-50 rounded-lg p-4">
+                          <p className="text-gray-700 leading-relaxed">
+                            {post.content.length > 300 ? post.content.substring(0, 300) + '...' : post.content}
+                          </p>
+                          {post.content.length > 300 && (
+                            <p className="text-blue-600 text-sm mt-2">Click edit to see full content</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+
       case "tools":
         return (
           <div>
@@ -395,6 +607,18 @@ export default function StaffPanel({ staffMember, onLogout }) {
                   onClick={() => setActiveSection("posts")}
                 >
                   📝 Create Posts
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`w-full text-left p-3 rounded-lg transition ${
+                    activeSection === "managePosts"
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => setActiveSection("managePosts")}
+                >
+                  📋 Manage Posts
                 </button>
               </li>
               <li>

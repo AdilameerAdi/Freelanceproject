@@ -31,9 +31,10 @@ CREATE TABLE posts (
   title TEXT NOT NULL,
   content TEXT NOT NULL,
   excerpt TEXT,
-  author_id BIGINT REFERENCES staff(id) ON DELETE CASCADE,
+  author_id BIGINT REFERENCES staff(id) ON DELETE SET NULL, -- Allow NULL for admin posts
   author_name TEXT NOT NULL,
   author_avatar TEXT,
+  author_type TEXT DEFAULT 'staff', -- 'staff' or 'admin'
   likes_count INTEGER DEFAULT 0,
   is_trending BOOLEAN DEFAULT false,
   is_published BOOLEAN DEFAULT true,

@@ -370,28 +370,41 @@ export const postService = {
   },
 
   // Create a new post
-  async createPost(postData, authorData) {
+  async createPost(postData, authorData, authorType = 'staff') {
     try {
+      const insertData = {
+        title: postData.title,
+        content: postData.content,
+        excerpt: postData.excerpt || postData.content.substring(0, 150) + '...',
+        author_name: authorData.name,
+        author_avatar: authorData.avatar,
+        likes_count: 0,
+        is_trending: false,
+        is_published: true,
+        created_at: new Date().toISOString()
+      }
+
+      // Only add author_type if the column exists (for backward compatibility)
+      if (authorType) {
+        insertData.author_type = authorType;
+      }
+
+      // Only set author_id for staff posts (since admin posts don't need staff table reference)
+      if (authorType === 'staff' && authorData.id) {
+        insertData.author_id = authorData.id
+      }
+
       const { data, error } = await supabase
         .from('posts')
-        .insert([{
-          title: postData.title,
-          content: postData.content,
-          excerpt: postData.excerpt || postData.content.substring(0, 150) + '...',
-          author_id: authorData.id,
-          author_name: authorData.name,
-          author_avatar: authorData.avatar,
-          likes_count: 0,
-          is_trending: false,
-          is_published: true,
-          created_at: new Date().toISOString()
-        }])
+        .insert([insertData])
         .select()
       
       if (error) throw error
 
-      // Update staff posts count
-      await staffService.updateStaffStat(authorData.id, 'posts')
+      // Update staff posts count only for staff posts
+      if (authorType === 'staff' && authorData.id) {
+        await staffService.updateStaffStat(authorData.id, 'posts')
+      }
       
       // Update trending posts in case this new post affects trending status
       await postService.updateTrendingPosts()
@@ -399,6 +412,53 @@ export const postService = {
       return data[0]
     } catch (error) {
       console.error('Error creating post:', error)
+      throw error
+    }
+  },
+
+  // Get admin posts only (for home page)
+  async getAdminPosts(limit = 3) {
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('is_published', true)
+        .eq('author_type', 'admin')
+        .order('created_at', { ascending: false })
+        .limit(limit)
+      
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error('Error fetching admin posts:', error)
+      return []
+    }
+  },
+
+  // Update an existing post
+  async updatePost(postId, postData) {
+    try {
+      const updateData = {
+        title: postData.title,
+        content: postData.content,
+        excerpt: postData.excerpt || postData.content.substring(0, 150) + '...',
+        updated_at: new Date().toISOString()
+      }
+
+      const { data, error } = await supabase
+        .from('posts')
+        .update(updateData)
+        .eq('id', postId)
+        .select()
+      
+      if (error) throw error
+      
+      // Update trending posts in case this edit affects trending status
+      await postService.updateTrendingPosts()
+      
+      return data[0]
+    } catch (error) {
+      console.error('Error updating post:', error)
       throw error
     }
   },

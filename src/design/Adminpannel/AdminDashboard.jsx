@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { eventService, staffService, supportService, updateService } from "../../services/supabase";
+import { eventService, staffService, supportService, updateService, postService } from "../../services/supabase";
 
 export default function AdminDashboard({ staffMembers, setStaffMembers, events, setEvents, loadEvents, loadStaff }) {
   const [activeSection, setActiveSection] = useState("events");
@@ -45,11 +45,24 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [updatesLoading, setUpdatesLoading] = useState(false);
 
+  // News/Posts state
+  const [posts, setPosts] = useState([]);
+  const [postForm, setPostForm] = useState({
+    title: "",
+    content: "",
+    excerpt: ""
+  });
+  const [editingPostId, setEditingPostId] = useState(null);
+  const [showPostForm, setShowPostForm] = useState(false);
+  const [postsLoading, setPostsLoading] = useState(false);
+
   useEffect(() => {
     if (activeSection === "pending") {
       loadTickets();
     } else if (activeSection === "updates") {
       loadUpdates();
+    } else if (activeSection === "news") {
+      loadPosts();
     }
   }, [activeSection]);
 
@@ -175,6 +188,94 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
     });
     setEditingUpdateId(null);
     setShowUpdateForm(false);
+  };
+
+  // News/Posts Management Functions
+  const loadPosts = async () => {
+    try {
+      setPostsLoading(true);
+      const allPosts = await postService.getAllPosts();
+      // Filter to show admin posts in admin panel
+      const adminPosts = allPosts.filter(post => post.author_type === 'admin');
+      setPosts(adminPosts);
+    } catch (error) {
+      console.error('Error loading posts:', error);
+    } finally {
+      setPostsLoading(false);
+    }
+  };
+
+  const handleAddPost = async () => {
+    if (!postForm.title.trim()) {
+      alert("Please enter a post title.");
+      return;
+    }
+    if (!postForm.content.trim()) {
+      alert("Please enter post content.");
+      return;
+    }
+
+    try {
+      const authorData = {
+        id: null, // Admin posts don't need staff table reference
+        name: "Admin", // This should be the current admin's name
+        avatar: "https://i.pravatar.cc/100?img=admin" // Admin avatar
+      };
+      
+      await postService.createPost(postForm, authorData, 'admin');
+      await loadPosts();
+      resetPostForm();
+      alert("News post created successfully!");
+    } catch (error) {
+      console.error('Error creating post:', error);
+      console.error('Error details:', error.message);
+      alert(`Failed to create post: ${error.message || 'Please try again.'}`);
+    }
+  };
+
+  const handleUpdatePost = async () => {
+    try {
+      // Note: We would need to add an updatePost function to postService
+      // For now, we'll show an alert
+      alert("Post update functionality coming soon!");
+      resetPostForm();
+    } catch (error) {
+      console.error('Error updating post:', error);
+      alert("Failed to update post. Please try again.");
+    }
+  };
+
+  const handleDeletePost = async (id) => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      try {
+        await postService.deletePost(id, 1); // Admin ID
+        await loadPosts();
+        alert("Post deleted successfully!");
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        alert("Failed to delete post. Please try again.");
+      }
+    }
+  };
+
+  const handleEditPost = (post) => {
+    setPostForm({
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt || ""
+    });
+    setEditingPostId(post.id);
+    setShowPostForm(true);
+  };
+
+  const resetPostForm = () => {
+    setPostForm({
+      title: "",
+      content: "",
+      excerpt: ""
+    });
+    setEditingPostId(null);
+    setShowPostForm(false);
   };
 
   // Event Management Functions
@@ -786,13 +887,135 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
           <div>
             <h2 className="text-3xl font-bold mb-6 text-gray-800">News Management</h2>
             <p className="text-gray-600 mb-6">
-              Create and manage news posts for the website.
+              Create and manage official admin news posts that appear on the website.
             </p>
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                + Create News Post
+
+            {/* Add/Edit Post Form */}
+            {showPostForm && (
+              <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <h3 className="text-xl font-semibold mb-4">
+                  {editingPostId ? "Edit News Post" : "Create New News Post"}
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Post Title</label>
+                    <input
+                      type="text"
+                      value={postForm.title}
+                      onChange={(e) => setPostForm({...postForm, title: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter news post title"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Excerpt (Optional)</label>
+                    <input
+                      type="text"
+                      value={postForm.excerpt}
+                      onChange={(e) => setPostForm({...postForm, excerpt: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Brief description (auto-generated if left empty)"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Post Content</label>
+                    <textarea
+                      value={postForm.content}
+                      onChange={(e) => setPostForm({...postForm, content: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows="8"
+                      placeholder="Write your news post content here..."
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={editingPostId ? handleUpdatePost : handleAddPost}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  >
+                    {editingPostId ? "Update" : "Create"} Post
+                  </button>
+                  <button
+                    onClick={resetPostForm}
+                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Add New Post Button */}
+            {!showPostForm && (
+              <button
+                onClick={() => setShowPostForm(true)}
+                className="mb-6 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              >
+                + Create New News Post
               </button>
-              <p className="text-gray-500 text-center py-8 mt-4">News management coming soon...</p>
+            )}
+
+            {/* Posts List */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-xl font-semibold mb-4">Admin News Posts ({posts.length})</h3>
+              {postsLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p>Loading posts...</p>
+                </div>
+              ) : posts.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No news posts created yet. Click "Create New News Post" to get started.</p>
+              ) : (
+                <div className="space-y-4">
+                  {posts.map((post) => (
+                    <div key={post.id} className="border rounded-lg p-4 hover:shadow-md transition">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h4 className="text-lg font-semibold">{post.title}</h4>
+                            <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full font-medium">
+                              👑 ADMIN POST
+                            </span>
+                            {post.is_trending && (
+                              <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full font-medium">
+                                🔥 Trending
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mb-2">By {post.author_name}</p>
+                          <p className="text-gray-700 mb-2 line-clamp-2">{post.content}</p>
+                          <div className="flex items-center gap-4 text-sm text-gray-500">
+                            <span>👍 {post.likes_count || 0} likes</span>
+                            <span>
+                              Created: {new Date(post.created_at).toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 ml-4">
+                          <button
+                            onClick={() => handleEditPost(post)}
+                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeletePost(post.id)}
+                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         );
