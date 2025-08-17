@@ -1,29 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { postService } from "../../services/supabase";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [latestNews, setLatestNews] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const latestNews = [
-    {
-      title: "New Dungeon Released!",
-      date: "August 15, 2025",
-      description:
-        "The Dragon’s Lair is now live. Join forces with your guild and defeat the mighty beast for legendary loot.",
-    },
-    {
-      title: "Server Maintenance",
-      date: "August 10, 2025",
-      description:
-        "Servers will be down for scheduled maintenance on Aug 12 from 2:00 AM to 6:00 AM UTC.",
-    },
-    {
-      title: "Summer Festival Event",
-      date: "July 25, 2025",
-      description:
-        "Celebrate the season with exclusive quests, rewards, and limited-time items in the Summer Festival.",
-    },
-  ];
+  useEffect(() => {
+    loadLatestNews();
+  }, []);
+
+  const loadLatestNews = async () => {
+    try {
+      setLoading(true);
+      // Get the top 3 latest posts
+      const posts = await postService.getPaginatedPosts(1, 3);
+      setLatestNews(posts);
+    } catch (error) {
+      console.error('Error loading latest news:', error);
+      // Fallback to empty array if database fails
+      setLatestNews([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNewsClick = (post) => {
+    // Navigate to news page with the specific post ID as a URL parameter
+    navigate(`/blog?postId=${post.id}`);
+  };
 
   const menuItems = [
     {
@@ -79,22 +85,32 @@ export default function Home() {
           <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 drop-shadow-lg mb-6">
             📰 Latest News
           </h2>
-          {latestNews.map((news, idx) => (
-            <div
-              key={idx}
-              className="bg-gradient-to-br from-gray-800 via-gray-900 to-black p-6 rounded-2xl border border-gray-700 shadow-lg hover:shadow-yellow-500/30 hover:-translate-y-1 transition transform duration-300"
-            >
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="text-2xl font-bold text-purple-300">
-                  {news.title}
-                </h3>
-                <span className="text-sm text-gray-400 italic">
-                  {news.date}
-                </span>
-              </div>
-              <p className="text-gray-300 leading-relaxed">{news.description}</p>
+          
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400 mx-auto mb-4"></div>
+              <p className="text-gray-400">Loading latest news...</p>
             </div>
-          ))}
+          ) : latestNews.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-400">No news posts available yet.</p>
+              <p className="text-gray-500 text-sm mt-2">Staff members can create posts that will appear here.</p>
+            </div>
+          ) : (
+            latestNews.map((news, idx) => (
+              <div
+                key={news.id}
+                onClick={() => handleNewsClick(news)}
+                className="bg-gradient-to-br from-gray-800 via-gray-900 to-black p-6 rounded-2xl border border-gray-700 shadow-lg hover:shadow-yellow-500/30 hover:-translate-y-1 transition transform duration-300 cursor-pointer group"
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <h3 className="text-2xl font-bold text-purple-300 group-hover:text-yellow-400 transition-colors">
+                    {news.title}
+                  </h3>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

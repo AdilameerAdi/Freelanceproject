@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { ThumbsUp, MessageCircle, Flame, X, Send, Heart } from "lucide-react";
 import { postService, commentService } from "../../services/supabase";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function CommunityHub() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [trendingPosts, setTrendingPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,6 +46,22 @@ export default function CommunityHub() {
     loadPosts();
     setUserName(getUserName());
   }, [currentPage]);
+
+  // Handle URL parameter for opening specific post
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const postId = urlParams.get('postId');
+    
+    if (postId && posts.length > 0) {
+      // Find the post by ID and open it
+      const foundPost = posts.find(post => post.id === parseInt(postId));
+      if (foundPost) {
+        openPostModal(foundPost);
+        // Clean up URL parameter
+        navigate('/blog', { replace: true });
+      }
+    }
+  }, [posts, location.search, navigate]);
 
   const loadPosts = async () => {
     try {
