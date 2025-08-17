@@ -3,6 +3,7 @@ import { postService, imageUploadService } from "../../services/supabase";
 
 export default function StaffPanel({ staffMember, onLogout }) {
   const [activeSection, setActiveSection] = useState("dashboard");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [postForm, setPostForm] = useState({
     title: "",
     content: "",
@@ -225,7 +226,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
               {/* Stats Cards */}
               <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-blue-100 text-blue-600">
+                  <div className="p-3 rounded-full bg-blue-800 text-blue-200">
                     📝
                   </div>
                   <div className="ml-4">
@@ -237,7 +238,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
               
               <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-green-100 text-green-600">
+                  <div className="p-3 rounded-full bg-green-800 text-green-200">
                     ❤️
                   </div>
                   <div className="ml-4">
@@ -249,7 +250,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
               
               <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-blue-100 text-blue-600">
+                  <div className="p-3 rounded-full bg-blue-800 text-blue-200">
                     ⭐
                   </div>
                   <div className="ml-4">
@@ -261,7 +262,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
               
               <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-purple-100 text-purple-600">
+                  <div className="p-3 rounded-full bg-purple-800 text-purple-200">
                     👁️
                   </div>
                   <div className="ml-4">
@@ -273,7 +274,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
             </div>
 
             {/* Welcome Section */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 border border-gray-700">
               <h3 className="text-xl font-semibold mb-4 text-white">Welcome back, {staffMember.name}!</h3>
               <div className="flex items-center space-x-4 mb-4">
                 <img
@@ -298,7 +299,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
         return (
           <div>
             <h2 className="text-3xl font-bold mb-6 text-white">My Profile</h2>
-            <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 border border-gray-700">
               <div className="flex items-center space-x-6 mb-6">
                 <img
                   src={staffMember.avatar || 'https://i.pravatar.cc/100?img=1'}
@@ -346,12 +347,12 @@ export default function StaffPanel({ staffMember, onLogout }) {
             </p>
 
             {/* Create Post Form */}
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-              <h3 className="text-xl font-semibold mb-4">Write New Post</h3>
+            <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-700">
+              <h3 className="text-xl font-semibold mb-4 text-white">Write New Post</h3>
               
               {postMessage && (
                 <div className={`mb-4 p-3 rounded-lg ${
-                  postMessage.includes('✅') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  postMessage.includes('✅') ? 'bg-green-800 text-green-200' : 'bg-red-800 text-red-200'
                 }`}>
                   {postMessage}
                 </div>
@@ -359,31 +360,31 @@ export default function StaffPanel({ staffMember, onLogout }) {
 
               <form onSubmit={handleCreatePost} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Post Title</label>
+                  <label className="block text-sm font-medium mb-2 text-gray-200">Post Title</label>
                   <input
                     type="text"
                     value={postForm.title}
                     onChange={(e) => setPostForm({...postForm, title: e.target.value})}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="Enter an engaging title for your post"
                     disabled={submittingPost}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Excerpt (Optional)</label>
+                  <label className="block text-sm font-medium mb-2 text-gray-200">Excerpt (Optional)</label>
                   <input
                     type="text"
                     value={postForm.excerpt}
                     onChange={(e) => setPostForm({...postForm, excerpt: e.target.value})}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="Brief description (auto-generated if left empty)"
                     disabled={submittingPost}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Post Image (Optional)</label>
+                  <label className="block text-sm font-medium mb-2 text-gray-200">Post Image (Optional)</label>
                   <div className="flex items-center space-x-4">
                     <input
                       type="file"
@@ -402,7 +403,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
                       Choose Image
                     </label>
                     {postImageFile && (
-                      <span className="text-sm text-gray-600">{postImageFile.name}</span>
+                      <span className="text-sm text-gray-300">{postImageFile.name}</span>
                     )}
                     {postImageFile && (
                       <button
@@ -424,16 +425,16 @@ export default function StaffPanel({ staffMember, onLogout }) {
                     </div>
                   )}
                   {uploadingImage && (
-                    <p className="text-sm text-blue-600 mt-2">Uploading image...</p>
+                    <p className="text-sm text-blue-400 mt-2">Uploading image...</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Post Content</label>
+                  <label className="block text-sm font-medium mb-2 text-gray-200">Post Content</label>
                   <textarea
                     value={postForm.content}
                     onChange={(e) => setPostForm({...postForm, content: e.target.value})}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                     rows="8"
                     placeholder="Write your post content here..."
                     disabled={submittingPost}
@@ -465,9 +466,9 @@ export default function StaffPanel({ staffMember, onLogout }) {
             </div>
 
             {/* Post Guidelines */}
-            <div className="bg-blue-50 rounded-lg p-6">
-              <h4 className="font-semibold text-blue-900 mb-2">📝 Posting Guidelines</h4>
-              <ul className="text-blue-800 text-sm space-y-1">
+            <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
+              <h4 className="font-semibold text-white mb-2">📝 Posting Guidelines</h4>
+              <ul className="text-gray-300 text-sm space-y-1">
                 <li>• Posts will appear immediately in the news section</li>
                 <li>• Users can like your posts, which increases your likes count</li>
                 <li>• Posts with 5+ likes become "trending" posts</li>
@@ -488,7 +489,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
 
             {postMessage && (
               <div className={`mb-4 p-3 rounded-lg ${
-                postMessage.includes('✅') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                postMessage.includes('✅') ? 'bg-green-800 text-green-200' : 'bg-red-800 text-red-200'
               }`}>
                 {postMessage}
               </div>
@@ -500,7 +501,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
                 <p className="text-gray-300">Loading your posts...</p>
               </div>
             ) : userPosts.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+              <div className="bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 text-center border border-gray-700">
                 <p className="text-gray-300 text-lg">You haven't created any posts yet.</p>
                 <p className="text-gray-400 text-sm mt-2">Go to "Create Posts" to write your first post!</p>
               </div>
@@ -519,7 +520,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
                               type="text"
                               value={editForm.title}
                               onChange={(e) => setEditForm({...editForm, title: e.target.value})}
-                              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                             />
                           </div>
                           <div>
@@ -528,11 +529,11 @@ export default function StaffPanel({ staffMember, onLogout }) {
                               type="text"
                               value={editForm.excerpt}
                               onChange={(e) => setEditForm({...editForm, excerpt: e.target.value})}
-                              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium mb-2">Post Image (Optional)</label>
+                            <label className="block text-sm font-medium mb-2 text-gray-200">Post Image (Optional)</label>
                             <div className="flex items-center space-x-4">
                               <input
                                 type="file"
@@ -551,7 +552,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
                                 Change Image
                               </label>
                               {editImageFile && (
-                                <span className="text-sm text-gray-600">{editImageFile.name}</span>
+                                <span className="text-sm text-gray-300">{editImageFile.name}</span>
                               )}
                               {(editImageFile || editImagePreview) && (
                                 <button
@@ -573,7 +574,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
                               </div>
                             )}
                             {uploadingImage && (
-                              <p className="text-sm text-blue-600 mt-2">Uploading image...</p>
+                              <p className="text-sm text-blue-400 mt-2">Uploading image...</p>
                             )}
                           </div>
                           <div>
@@ -581,7 +582,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
                             <textarea
                               value={editForm.content}
                               onChange={(e) => setEditForm({...editForm, content: e.target.value})}
-                              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                               rows="8"
                             />
                           </div>
@@ -604,29 +605,29 @@ export default function StaffPanel({ staffMember, onLogout }) {
                     ) : (
                       // View Mode
                       <div>
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold text-white mb-2">{post.title}</h3>
-                            <div className="flex items-center gap-4 text-sm text-gray-300 mb-3">
+                        <div className="flex justify-between items-start gap-2 mb-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-xl font-bold text-white mb-2 break-words">{post.title}</h3>
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-300 mb-3">
                               <span>Created: {new Date(post.created_at).toLocaleDateString()}</span>
                               <span>👍 {post.likes_count || 0} likes</span>
                               {post.is_trending && (
-                                <span className="px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs">
+                                <span className="px-2 py-1 bg-red-800 text-red-200 rounded-full text-xs">
                                   🔥 Trending
                                 </span>
                               )}
                             </div>
                           </div>
-                          <div className="flex gap-2 ml-4">
+                          <div className="flex gap-2 flex-shrink-0">
                             <button
                               onClick={() => startEditing(post)}
-                              className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+                              className="px-2 sm:px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm whitespace-nowrap"
                             >
                               ✏️ Edit
                             </button>
                             <button
                               onClick={() => handleDeletePost(post.id)}
-                              className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
+                              className="px-2 sm:px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm whitespace-nowrap"
                             >
                               🗑️ Delete
                             </button>
@@ -658,16 +659,16 @@ export default function StaffPanel({ staffMember, onLogout }) {
               <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
                 <h3 className="text-lg font-semibold mb-4 text-white">Quick Actions</h3>
                 <div className="space-y-2">
-                  <button className="w-full text-left p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition">
+                  <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                     📢 Send Announcement
                   </button>
-                  <button className="w-full text-left p-3 rounded-lg bg-green-50 hover:bg-green-100 transition">
+                  <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                     👥 View Online Users
                   </button>
-                  <button className="w-full text-left p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition">
+                  <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                     ⚠️ Report Issue
                   </button>
-                  <button className="w-full text-left p-3 rounded-lg bg-purple-50 hover:bg-purple-100 transition">
+                  <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                     📊 View Statistics
                   </button>
                 </div>
@@ -679,45 +680,45 @@ export default function StaffPanel({ staffMember, onLogout }) {
                 <div className="space-y-2">
                   {staffMember.role === 'Developer' && (
                     <>
-                      <button className="w-full text-left p-3 rounded-lg bg-red-50 hover:bg-red-100 transition">
+                      <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                         🔧 Development Console
                       </button>
-                      <button className="w-full text-left p-3 rounded-lg bg-red-50 hover:bg-red-100 transition">
+                      <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                         🐛 Bug Tracker
                       </button>
                     </>
                   )}
                   {staffMember.role === 'Moderator' && (
                     <>
-                      <button className="w-full text-left p-3 rounded-lg bg-cyan-50 hover:bg-cyan-100 transition">
+                      <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                         🛡️ Moderation Panel
                       </button>
-                      <button className="w-full text-left p-3 rounded-lg bg-cyan-50 hover:bg-cyan-100 transition">
+                      <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                         📝 User Reports
                       </button>
                     </>
                   )}
                   {(staffMember.role === 'Administrator' || staffMember.role === 'Leader') && (
                     <>
-                      <button className="w-full text-left p-3 rounded-lg bg-orange-50 hover:bg-orange-100 transition">
+                      <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                         ⚙️ Server Settings
                       </button>
-                      <button className="w-full text-left p-3 rounded-lg bg-orange-50 hover:bg-orange-100 transition">
+                      <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                         👥 User Management
                       </button>
                     </>
                   )}
                   {staffMember.role.includes('Balance') && (
-                    <button className="w-full text-left p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition">
+                    <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                       ⚖️ Balance Tools
                     </button>
                   )}
                   {staffMember.role === 'Community Manager' && (
                     <>
-                      <button className="w-full text-left p-3 rounded-lg bg-green-50 hover:bg-green-100 transition">
+                      <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                         🎉 Event Manager
                       </button>
-                      <button className="w-full text-left p-3 rounded-lg bg-green-50 hover:bg-green-100 transition">
+                      <button className="w-full text-left p-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition text-gray-200">
                         💬 Community Hub
                       </button>
                     </>
@@ -736,30 +737,55 @@ export default function StaffPanel({ staffMember, onLogout }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       {/* Header */}
-      <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 shadow-lg">
+      <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 sm:p-6 shadow-lg relative z-30">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">
+          {/* Hamburger Menu Button */}
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors z-50"
+          >
+            <div className="w-6 h-6 flex flex-col justify-center space-y-1">
+              <span className={`block h-0.5 w-6 bg-white transition-transform duration-300 ${isSidebarOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
+              <span className={`block h-0.5 w-6 bg-white transition-opacity duration-300 ${isSidebarOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`block h-0.5 w-6 bg-white transition-transform duration-300 ${isSidebarOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
+            </div>
+          </button>
+
+          <div className="pl-12">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">
               👤 Staff Panel
             </h1>
-            <p className="text-purple-100 mt-1">
+            <p className="text-purple-100 mt-1 text-sm sm:text-base">
               Welcome, {staffMember.name} ({staffMember.role})
             </p>
           </div>
           <button
             onClick={onLogout}
-            className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition"
+            className="px-3 sm:px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition text-sm sm:text-base"
           >
             Logout
           </button>
         </div>
       </header>
 
-      {/* Main Layout */}
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-64 bg-gray-800 shadow-lg min-h-screen border-r border-gray-700">
-          <nav className="p-4">
+      {/* Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed top-0 left-0 h-full
+        bg-gray-800 shadow-xl border-r border-gray-700 z-50
+        transition-transform duration-300 ease-in-out
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        w-64
+      `}>
+        <div className="h-full overflow-y-auto">
+          <nav className="p-4 pt-20">
             <ul className="space-y-2">
               <li>
                 <button
@@ -768,9 +794,15 @@ export default function StaffPanel({ staffMember, onLogout }) {
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
                   }`}
-                  onClick={() => setActiveSection("dashboard")}
+                  onClick={() => {
+                    setActiveSection("dashboard");
+                    setIsSidebarOpen(false);
+                  }}
                 >
-                  🏠 Dashboard
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">🏠</span>
+                    <span>Dashboard</span>
+                  </div>
                 </button>
               </li>
               <li>
@@ -780,9 +812,15 @@ export default function StaffPanel({ staffMember, onLogout }) {
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
                   }`}
-                  onClick={() => setActiveSection("profile")}
+                  onClick={() => {
+                    setActiveSection("profile");
+                    setIsSidebarOpen(false);
+                  }}
                 >
-                  👤 My Profile
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">👤</span>
+                    <span>My Profile</span>
+                  </div>
                 </button>
               </li>
               <li>
@@ -792,9 +830,15 @@ export default function StaffPanel({ staffMember, onLogout }) {
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
                   }`}
-                  onClick={() => setActiveSection("posts")}
+                  onClick={() => {
+                    setActiveSection("posts");
+                    setIsSidebarOpen(false);
+                  }}
                 >
-                  📝 Create Posts
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">📝</span>
+                    <span>Create Posts</span>
+                  </div>
                 </button>
               </li>
               <li>
@@ -804,9 +848,15 @@ export default function StaffPanel({ staffMember, onLogout }) {
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
                   }`}
-                  onClick={() => setActiveSection("managePosts")}
+                  onClick={() => {
+                    setActiveSection("managePosts");
+                    setIsSidebarOpen(false);
+                  }}
                 >
-                  📋 Manage Posts
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">📋</span>
+                    <span>Manage Posts</span>
+                  </div>
                 </button>
               </li>
               <li>
@@ -816,18 +866,28 @@ export default function StaffPanel({ staffMember, onLogout }) {
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
                   }`}
-                  onClick={() => setActiveSection("tools")}
+                  onClick={() => {
+                    setActiveSection("tools");
+                    setIsSidebarOpen(false);
+                  }}
                 >
-                  🔧 Staff Tools
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">🔧</span>
+                    <span>Staff Tools</span>
+                  </div>
                 </button>
               </li>
             </ul>
           </nav>
-        </aside>
+        </div>
+      </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 p-8">{renderSection()}</main>
-      </div>
+      {/* Main Content */}
+      <main className="w-full p-4 sm:p-6 lg:p-8 min-h-screen">
+        <div className="max-w-7xl mx-auto">
+          {renderSection()}
+        </div>
+      </main>
     </div>
   );
 }

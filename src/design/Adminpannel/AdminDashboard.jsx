@@ -3,6 +3,7 @@ import { eventService, staffService, supportService, updateService, postService,
 
 export default function AdminDashboard({ staffMembers, setStaffMembers, events, setEvents, loadEvents, loadStaff }) {
   const [activeSection, setActiveSection] = useState("events");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   // Event Management State
   const [eventForm, setEventForm] = useState({
@@ -482,25 +483,25 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
       case "events":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-white">Event Management</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">Event Management</h2>
             <p className="text-gray-300 mb-6">
               Manage all events that appear on the website. These events will be displayed on the homepage slider and events page.
             </p>
 
             {/* Add/Edit Event Form */}
             {showEventForm && (
-              <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-6 border border-gray-700">
-                <h3 className="text-xl font-semibold mb-4 text-white">
+              <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6 border border-gray-700">
+                <h3 className="text-lg sm:text-xl font-semibold mb-4 text-white">
                   {editingEventId ? "Edit Event" : "Add New Event"}
                 </h3>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 sm:gap-4 min-w-0">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-gray-200">Event Title</label>
                     <input
                       type="text"
                       value={eventForm.title}
                       onChange={(e) => setEventForm({...eventForm, title: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       placeholder="Enter event title"
                     />
                   </div>
@@ -510,7 +511,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       type="text"
                       value={eventForm.date}
                       onChange={(e) => setEventForm({...eventForm, date: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       placeholder="e.g., August 25, 2025"
                     />
                   </div>
@@ -520,7 +521,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       type="text"
                       value={eventForm.icon}
                       onChange={(e) => setEventForm({...eventForm, icon: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       placeholder="e.g., 🔥"
                     />
                   </div>
@@ -529,7 +530,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                     <select
                       value={eventForm.status}
                       onChange={(e) => setEventForm({...eventForm, status: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                     >
                       <option value="upcoming">Upcoming</option>
                       <option value="ongoing">Ongoing</option>
@@ -541,22 +542,22 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                     <textarea
                       value={eventForm.description}
                       onChange={(e) => setEventForm({...eventForm, description: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       rows="3"
                       placeholder="Enter event description"
                     />
                   </div>
                 </div>
-                <div className="flex gap-2 mt-4">
+                <div className="flex flex-col sm:flex-row gap-2 mt-4 flex-wrap">
                   <button
                     onClick={editingEventId ? handleUpdateEvent : handleAddEvent}
-                    className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition"
+                    className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition"
                   >
                     {editingEventId ? "Update Event" : "Add Event"}
                   </button>
                   <button
                     onClick={resetEventForm}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+                    className="w-full sm:w-auto px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
                   >
                     Cancel
                   </button>
@@ -568,14 +569,14 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
             {!showEventForm && (
               <button
                 onClick={() => setShowEventForm(true)}
-                className="mb-6 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition"
+                className="mb-6 w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition"
               >
                 + Add New Event
               </button>
             )}
 
             {/* Events List */}
-            <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
+            <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 border border-gray-700">
               <h3 className="text-xl font-semibold mb-4 text-white">Current Events ({events.length})</h3>
               {events.length === 0 ? (
                 <p className="text-gray-400 text-center py-8">No events created yet. Click "Add New Event" to get started.</p>
@@ -583,11 +584,11 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                 <div className="space-y-4">
                   {events.map((event) => (
                     <div key={event.id} className="border border-gray-600 bg-gray-700 rounded-lg p-4 hover:shadow-md transition">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-2xl">{event.icon}</span>
-                            <h4 className="text-lg font-semibold text-white">{event.title}</h4>
+                            <h4 className="text-lg font-semibold text-white break-words line-clamp-2">{event.title}</h4>
                             <span className={`px-2 py-1 text-xs rounded-full ${
                               event.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
                               event.status === 'ongoing' ? 'bg-green-100 text-green-800' :
@@ -597,18 +598,18 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                             </span>
                           </div>
                           <p className="text-sm text-gray-300 mb-1">📅 {event.date}</p>
-                          <p className="text-gray-200">{event.description}</p>
+                          <p className="text-gray-200 break-words">{event.description}</p>
                         </div>
-                        <div className="flex gap-2 ml-4">
+                        <div className="flex gap-1 sm:gap-2 flex-shrink-0">
                           <button
                             onClick={() => handleEditEvent(event)}
-                            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                            className="px-2 sm:px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-xs sm:text-sm whitespace-nowrap"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDeleteEvent(event.id)}
-                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                            className="px-2 sm:px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition text-xs sm:text-sm whitespace-nowrap"
                           >
                             Delete
                           </button>
@@ -625,14 +626,14 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
       case "staff":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-white">Staff Management</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">Staff Management</h2>
             <p className="text-gray-300 mb-6">
               Add new staff members, manage their roles and credentials, and update their profiles.
             </p>
 
             {/* Add/Edit Staff Form */}
             {showStaffForm && (
-              <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-6 border border-gray-700">
+              <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6 border border-gray-700">
                 <h3 className="text-xl font-semibold mb-4 text-white">
                   {editingStaffId ? "Edit Staff Member" : "Add New Staff Member"}
                 </h3>
@@ -643,7 +644,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       type="text"
                       value={staffForm.name}
                       onChange={(e) => setStaffForm({...staffForm, name: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       placeholder="Enter full name"
                     />
                   </div>
@@ -653,7 +654,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       type="text"
                       value={staffForm.username}
                       onChange={(e) => setStaffForm({...staffForm, username: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       placeholder="Enter username"
                     />
                   </div>
@@ -663,7 +664,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       type="text"
                       value={staffForm.password}
                       onChange={(e) => setStaffForm({...staffForm, password: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       placeholder="Enter password"
                     />
                   </div>
@@ -672,7 +673,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                     <select
                       value={staffForm.role}
                       onChange={(e) => setStaffForm({...staffForm, role: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                     >
                       {staffService.getAvailableRoles().map(role => (
                         <option key={role} value={role}>{role}</option>
@@ -685,21 +686,21 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       type="url"
                       value={staffForm.avatar}
                       onChange={(e) => setStaffForm({...staffForm, avatar: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       placeholder="https://example.com/avatar.jpg"
                     />
                   </div>
                 </div>
-                <div className="flex gap-2 mt-4">
+                <div className="flex flex-col sm:flex-row gap-2 mt-4 flex-wrap">
                   <button
                     onClick={editingStaffId ? handleUpdateStaff : handleAddStaff}
-                    className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition"
+                    className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition"
                   >
                     {editingStaffId ? "Update Staff" : "Add Staff"}
                   </button>
                   <button
                     onClick={resetStaffForm}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+                    className="w-full sm:w-auto px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
                   >
                     Cancel
                   </button>
@@ -711,13 +712,13 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
             {!showStaffForm && (
               <button
                 onClick={() => setShowStaffForm(true)}
-                className="mb-6 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition"
+                className="mb-6 w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition"
               >
                 + Add New Staff Member
               </button>
             )}
 
-            <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+            <div className="grid gap-4 sm:gap-6 xl:grid-cols-2">
               {staffMembers.map((staff) => (
                 <div
                   key={staff.id}
@@ -727,23 +728,23 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                   <div className="h-20 bg-gradient-to-r from-purple-600 via-blue-500 to-purple-700" />
 
                   {/* Profile Row */}
-                  <div className="flex items-center -mt-10 px-6 relative">
+                  <div className="flex items-center -mt-10 px-4 sm:px-6 relative">
                     <img
                       src={staff.avatar}
                       alt={staff.name}
                       className="w-16 h-16 rounded-full border-4 border-gray-700 cursor-pointer hover:opacity-80"
                       onClick={() => updateStaffStat(staff.id, "hits")}
                     />
-                    <div className="ml-4">
-                      <h3 className="text-lg font-bold text-white">{staff.name}</h3>
-                      <span className="text-sm text-gray-300">{staff.role}</span>
+                    <div className="ml-3 sm:ml-4">
+                      <h3 className="text-base sm:text-lg font-bold text-white">{staff.name}</h3>
+                      <span className="text-xs sm:text-sm text-gray-300">{staff.role}</span>
                     </div>
                   </div>
 
                   {/* Stats */}
-                  <div className="px-6 py-3 text-sm text-gray-200 border-t border-gray-600">
+                  <div className="px-4 sm:px-6 py-3 text-xs sm:text-sm text-gray-200 border-t border-gray-600">
                     <p>Member since {staff.joined}</p>
-                    <div className="grid grid-cols-2 gap-2 mt-2">
+                    <div className="grid grid-cols-2 gap-1 sm:gap-2 mt-2">
                       <span>📝 Posts: {staff.posts}</span>
                       <span>❤️ Likes: {staff.likes}</span>
                       <span>⭐ Points: {staff.points}</span>
@@ -752,7 +753,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                   </div>
 
                   {/* Controls */}
-                  <div className="px-6 py-3 flex flex-wrap gap-2 border-t border-gray-600">
+                  <div className="px-4 sm:px-6 py-3 flex flex-wrap gap-2 border-t border-gray-600">
                     <button
                       onClick={() => {
                         const newUrl = prompt("Enter new avatar URL:", staff.avatar);
@@ -760,7 +761,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                           changeAvatar(staff.id, newUrl.trim());
                         }
                       }}
-                      className="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 transition"
+                      className="px-2 sm:px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 transition text-xs sm:text-sm whitespace-nowrap"
                     >
                       Change Avatar
                     </button>
@@ -771,19 +772,19 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                           changeJoinDate(staff.id, newDate.trim());
                         }
                       }}
-                      className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
+                      className="px-2 sm:px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition text-xs sm:text-sm whitespace-nowrap"
                     >
                       Change Join Date
                     </button>
                     <button
                       onClick={() => handleEditStaff(staff)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                      className="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-xs sm:text-sm whitespace-nowrap"
                     >
                       Edit Details
                     </button>
                     <button
                       onClick={() => handleDeleteStaff(staff.id)}
-                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                      className="px-2 sm:px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-xs sm:text-sm whitespace-nowrap"
                     >
                       Remove
                     </button>
@@ -797,7 +798,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
       case "pending":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-white">Support Tickets Management</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">Support Tickets Management</h2>
             <p className="text-gray-300 mb-6">
               View and manage support tickets submitted by users.
             </p>
@@ -810,8 +811,8 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
             ) : (
               <div className="space-y-6">
                 {/* Pending Tickets */}
-                <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
-                  <h3 className="text-xl font-semibold mb-4 text-yellow-400 flex items-center gap-2">
+                <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 border border-gray-700">
+                  <h3 className="text-lg sm:text-xl font-semibold mb-4 text-yellow-400 flex items-center gap-2">
                     ⚠️ Pending Tickets ({pendingTickets.length})
                   </h3>
                   {pendingTickets.length === 0 ? (
@@ -820,9 +821,9 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                     <div className="space-y-4">
                       {pendingTickets.map((ticket) => (
                         <div key={ticket.id} className="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
-                          <div className="flex justify-between items-start mb-3">
-                            <div className="flex-1">
-                              <h4 className="text-lg font-semibold text-gray-800">{ticket.title}</h4>
+                          <div className="flex justify-between items-start mb-3 gap-2">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-lg font-semibold text-gray-800 break-words line-clamp-2">{ticket.title}</h4>
                               <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
                                 <span>👤 {ticket.user_name}</span>
                                 <span>📧 {ticket.user_email}</span>
@@ -837,25 +838,25 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                                 </span>
                               </div>
                             </div>
-                            <div className="flex gap-2 ml-4">
+                            <div className="flex gap-1 sm:gap-2 flex-shrink-0">
                               <button
                                 onClick={() => {
                                   const response = prompt("Enter admin response (optional):");
                                   handleResolveTicket(ticket.id, response);
                                 }}
-                                className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition text-sm"
+                                className="px-2 sm:px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition text-xs sm:text-sm whitespace-nowrap"
                               >
                                 ✅ Resolve
                               </button>
                               <button
                                 onClick={() => handleDeleteTicket(ticket.id)}
-                                className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-sm"
+                                className="px-2 sm:px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-xs sm:text-sm whitespace-nowrap"
                               >
                                 🗑️ Delete
                               </button>
                             </div>
                           </div>
-                          <p className="text-gray-700 mb-3">{ticket.description}</p>
+                          <p className="text-gray-700 mb-3 break-words">{ticket.description}</p>
                           <p className="text-xs text-gray-500">
                             Submitted: {new Date(ticket.created_at).toLocaleDateString('en-US', { 
                               year: 'numeric', 
@@ -872,8 +873,8 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                 </div>
 
                 {/* Resolved Tickets */}
-                <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
-                  <h3 className="text-xl font-semibold mb-4 text-green-400 flex items-center gap-2">
+                <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 border border-gray-700">
+                  <h3 className="text-lg sm:text-xl font-semibold mb-4 text-green-400 flex items-center gap-2">
                     ✅ Resolved Tickets ({resolvedTickets.length})
                   </h3>
                   {resolvedTickets.length === 0 ? (
@@ -882,9 +883,9 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                     <div className="space-y-4">
                       {resolvedTickets.map((ticket) => (
                         <div key={ticket.id} className="border border-green-600 rounded-lg p-4 bg-green-900/20">
-                          <div className="flex justify-between items-start mb-3">
-                            <div className="flex-1">
-                              <h4 className="text-lg font-semibold text-gray-800">{ticket.title}</h4>
+                          <div className="flex justify-between items-start mb-3 gap-2">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-lg font-semibold text-gray-800 break-words line-clamp-2">{ticket.title}</h4>
                               <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
                                 <span>👤 {ticket.user_name}</span>
                                 <span>📧 {ticket.user_email}</span>
@@ -893,7 +894,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                             </div>
                             <button
                               onClick={() => handleDeleteTicket(ticket.id)}
-                              className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm ml-4"
+                              className="px-2 sm:px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition text-xs sm:text-sm whitespace-nowrap"
                             >
                               🗑️ Delete
                             </button>
@@ -934,14 +935,14 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
       case "news":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-white">News Management</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">News Management</h2>
             <p className="text-gray-300 mb-6">
               Create and manage official admin news posts that appear on the website.
             </p>
 
             {/* Add/Edit Post Form */}
             {showPostForm && (
-              <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-6 border border-gray-700">
+              <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6 border border-gray-700">
                 <h3 className="text-xl font-semibold mb-4 text-white">
                   {editingPostId ? "Edit News Post" : "Create New News Post"}
                 </h3>
@@ -952,7 +953,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       type="text"
                       value={postForm.title}
                       onChange={(e) => setPostForm({...postForm, title: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       placeholder="Enter news post title"
                     />
                   </div>
@@ -962,7 +963,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       type="text"
                       value={postForm.excerpt}
                       onChange={(e) => setPostForm({...postForm, excerpt: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       placeholder="Brief description (auto-generated if left empty)"
                     />
                   </div>
@@ -979,7 +980,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       />
                       <label
                         htmlFor="admin-post-image-upload"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition"
+                        className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition"
                       >
                         Choose Image
                       </label>
@@ -1013,22 +1014,22 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                     <textarea
                       value={postForm.content}
                       onChange={(e) => setPostForm({...postForm, content: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       rows="8"
                       placeholder="Write your news post content here..."
                     />
                   </div>
                 </div>
-                <div className="flex gap-2 mt-4">
+                <div className="flex flex-col sm:flex-row gap-2 mt-4 flex-wrap">
                   <button
                     onClick={editingPostId ? handleUpdatePost : handleAddPost}
-                    className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition"
+                    className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition"
                   >
                     {editingPostId ? "Update" : "Create"} Post
                   </button>
                   <button
                     onClick={resetPostForm}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+                    className="w-full sm:w-auto px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
                   >
                     Cancel
                   </button>
@@ -1040,14 +1041,14 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
             {!showPostForm && (
               <button
                 onClick={() => setShowPostForm(true)}
-                className="mb-6 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition"
+                className="mb-6 w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition"
               >
                 + Create New News Post
               </button>
             )}
 
             {/* Posts List */}
-            <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
+            <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 border border-gray-700">
               <h3 className="text-xl font-semibold mb-4 text-white">Admin News Posts ({posts.length})</h3>
               {postsLoading ? (
                 <div className="text-center py-8">
@@ -1060,8 +1061,8 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                 <div className="space-y-4">
                   {posts.map((post) => (
                     <div key={post.id} className="border border-gray-600 bg-gray-700 rounded-lg p-4 hover:shadow-md transition">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-3 mb-2">
                             <h4 className="text-lg font-semibold text-white">{post.title}</h4>
                             <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full font-medium">
@@ -1088,16 +1089,16 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                             </span>
                           </div>
                         </div>
-                        <div className="flex gap-2 ml-4">
+                        <div className="flex gap-1 sm:gap-2 flex-shrink-0">
                           <button
                             onClick={() => handleEditPost(post)}
-                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                            className="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-xs sm:text-sm whitespace-nowrap"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDeletePost(post.id)}
-                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                            className="px-2 sm:px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-xs sm:text-sm whitespace-nowrap"
                           >
                             Delete
                           </button>
@@ -1114,14 +1115,14 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
       case "updates":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-white">Updates Management</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">Updates Management</h2>
             <p className="text-gray-300 mb-6">
               Create and manage system updates, announcements, and version releases.
             </p>
 
             {/* Add/Edit Update Form */}
             {showUpdateForm && (
-              <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-6 border border-gray-700">
+              <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6 border border-gray-700">
                 <h3 className="text-xl font-semibold mb-4 text-white">
                   {editingUpdateId ? "Edit Update" : "Create New Update"}
                 </h3>
@@ -1132,7 +1133,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       type="text"
                       value={updateForm.title}
                       onChange={(e) => setUpdateForm({...updateForm, title: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       placeholder="Enter update title"
                     />
                   </div>
@@ -1142,7 +1143,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       type="text"
                       value={updateForm.version}
                       onChange={(e) => setUpdateForm({...updateForm, version: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       placeholder="e.g., v1.2.3"
                     />
                   </div>
@@ -1151,7 +1152,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                     <select
                       value={updateForm.category}
                       onChange={(e) => setUpdateForm({...updateForm, category: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                     >
                       {updateService.getCategories().map(category => (
                         <option key={category} value={category}>
@@ -1165,7 +1166,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                     <select
                       value={updateForm.priority}
                       onChange={(e) => setUpdateForm({...updateForm, priority: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                     >
                       {updateService.getPriorities().map(priority => (
                         <option key={priority.value} value={priority.value}>{priority.label}</option>
@@ -1177,7 +1178,7 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                     <textarea
                       value={updateForm.content}
                       onChange={(e) => setUpdateForm({...updateForm, content: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
                       rows="6"
                       placeholder="Describe the update details, changes, and any important information..."
                     />
@@ -1194,16 +1195,16 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                     </label>
                   </div>
                 </div>
-                <div className="flex gap-2 mt-4">
+                <div className="flex flex-col sm:flex-row gap-2 mt-4 flex-wrap">
                   <button
                     onClick={editingUpdateId ? handleUpdateUpdate : handleAddUpdate}
-                    className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition"
+                    className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition"
                   >
                     {editingUpdateId ? "Update" : "Create"} Update
                   </button>
                   <button
                     onClick={resetUpdateForm}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+                    className="w-full sm:w-auto px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
                   >
                     Cancel
                   </button>
@@ -1215,14 +1216,14 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
             {!showUpdateForm && (
               <button
                 onClick={() => setShowUpdateForm(true)}
-                className="mb-6 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition"
+                className="mb-6 w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition"
               >
                 + Create New Update
               </button>
             )}
 
             {/* Updates List */}
-            <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
+            <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 border border-gray-700">
               <h3 className="text-xl font-semibold mb-4 text-white">All Updates ({updates.length})</h3>
               {updatesLoading ? (
                 <div className="text-center py-8">
@@ -1235,8 +1236,8 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                 <div className="space-y-4">
                   {updates.map((update) => (
                     <div key={update.id} className="border border-gray-600 bg-gray-700 rounded-lg p-4 hover:shadow-md transition">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-3 mb-2">
                             <h4 className="text-lg font-semibold text-white">{update.title}</h4>
                             {update.version && (
@@ -1273,16 +1274,16 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                             })}
                           </p>
                         </div>
-                        <div className="flex gap-2 ml-4">
+                        <div className="flex gap-1 sm:gap-2 flex-shrink-0">
                           <button
                             onClick={() => handleEditUpdate(update)}
-                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                            className="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-xs sm:text-sm whitespace-nowrap"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDeleteUpdate(update.id)}
-                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                            className="px-2 sm:px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-xs sm:text-sm whitespace-nowrap"
                           >
                             Delete
                           </button>
@@ -1299,11 +1300,11 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
       case "info":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-white">Information & Notices</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">Information & Notices</h2>
             <p className="text-gray-300 mb-6">
               Post important notices and information for users.
             </p>
-            <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
+            <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 border border-gray-700">
               <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition">
                 + Create Notice
               </button>
@@ -1320,81 +1321,136 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       {/* Header */}
-      <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 shadow-lg">
+      <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 sm:p-6 shadow-lg relative z-30">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-center">
+          {/* Hamburger Menu Button */}
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors z-50"
+          >
+            <div className="w-6 h-6 flex flex-col justify-center space-y-1">
+              <span className={`block h-0.5 w-6 bg-white transition-transform duration-300 ${isSidebarOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
+              <span className={`block h-0.5 w-6 bg-white transition-opacity duration-300 ${isSidebarOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`block h-0.5 w-6 bg-white transition-transform duration-300 ${isSidebarOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
+            </div>
+          </button>
+          
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-center pl-12">
             🎮 NosDionisy Admin Dashboard
           </h1>
-          <p className="text-center mt-2 text-blue-100">
+          <p className="text-center mt-2 text-blue-100 text-sm sm:text-base">
             Manage events, staff, and content from one place
           </p>
         </div>
       </header>
 
-      {/* Main Layout */}
-      <div className="flex flex-col lg:flex-row">
-        {/* Sidebar */}
-        <aside className="w-full lg:w-64 bg-gray-800 shadow-lg min-h-screen border-r border-gray-700 lg:min-h-screen">
-          <nav className="p-2 sm:p-4">
-            <ul className="space-y-1 sm:space-y-2 flex lg:flex-col overflow-x-auto lg:overflow-x-visible">
-              <li className="min-w-max lg:min-w-0">
+      {/* Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed top-0 left-0 h-full
+        bg-gray-800 shadow-xl border-r border-gray-700 z-50
+        transition-transform duration-300 ease-in-out
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        w-64
+      `}>
+        <div className="h-full overflow-y-auto">
+          <nav className="p-4 pt-20">
+            <ul className="space-y-2">
+              <li>
                 <button
-                  className={`w-full text-left p-2 sm:p-3 rounded-lg transition text-sm sm:text-base whitespace-nowrap lg:whitespace-normal ${
+                  className={`w-full text-left p-3 rounded-lg transition ${
                     activeSection === "events"
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
                   }`}
-                  onClick={() => setActiveSection("events")}
+                  onClick={() => {
+                    setActiveSection("events");
+                    setIsSidebarOpen(false);
+                  }}
                 >
-                  🎉 Events
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">🎉</span>
+                    <span>Events</span>
+                  </div>
                 </button>
               </li>
-              <li className="min-w-max lg:min-w-0">
+              <li>
                 <button
-                  className={`w-full text-left p-2 sm:p-3 rounded-lg transition text-sm sm:text-base whitespace-nowrap lg:whitespace-normal ${
+                  className={`w-full text-left p-3 rounded-lg transition ${
                     activeSection === "staff"
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
                   }`}
-                  onClick={() => setActiveSection("staff")}
+                  onClick={() => {
+                    setActiveSection("staff");
+                    setIsSidebarOpen(false);
+                  }}
                 >
-                  👥 Staff Management
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">👥</span>
+                    <span>Staff Management</span>
+                  </div>
                 </button>
               </li>
-              <li className="min-w-max lg:min-w-0">
+              <li>
                 <button
-                  className={`w-full text-left p-2 sm:p-3 rounded-lg transition text-sm sm:text-base whitespace-nowrap lg:whitespace-normal ${
+                  className={`w-full text-left p-3 rounded-lg transition ${
                     activeSection === "pending"
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
                   }`}
-                  onClick={() => setActiveSection("pending")}
+                  onClick={() => {
+                    setActiveSection("pending");
+                    setIsSidebarOpen(false);
+                  }}
                 >
-                  ⚠️ Pending Problems
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">⚠️</span>
+                    <span>Pending Problems</span>
+                  </div>
                 </button>
               </li>
-              <li className="min-w-max lg:min-w-0">
+              <li>
                 <button
-                  className={`w-full text-left p-2 sm:p-3 rounded-lg transition text-sm sm:text-base whitespace-nowrap lg:whitespace-normal ${
+                  className={`w-full text-left p-3 rounded-lg transition ${
                     activeSection === "news"
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
                   }`}
-                  onClick={() => setActiveSection("news")}
+                  onClick={() => {
+                    setActiveSection("news");
+                    setIsSidebarOpen(false);
+                  }}
                 >
-                  📰 Latest News
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">📰</span>
+                    <span>Latest News</span>
+                  </div>
                 </button>
               </li>
-              <li className="min-w-max lg:min-w-0">
+              <li>
                 <button
-                  className={`w-full text-left p-2 sm:p-3 rounded-lg transition text-sm sm:text-base whitespace-nowrap lg:whitespace-normal ${
+                  className={`w-full text-left p-3 rounded-lg transition ${
                     activeSection === "updates"
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
                   }`}
-                  onClick={() => setActiveSection("updates")}
+                  onClick={() => {
+                    setActiveSection("updates");
+                    setIsSidebarOpen(false);
+                  }}
                 >
-                  🔄 Updates
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">🔄</span>
+                    <span>Updates</span>
+                  </div>
                 </button>
               </li>
               <li>
@@ -1404,18 +1460,28 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                       ? "bg-purple-600 text-white"
                       : "hover:bg-gray-700 text-gray-300"
                   }`}
-                  onClick={() => setActiveSection("info")}
+                  onClick={() => {
+                    setActiveSection("info");
+                    setIsSidebarOpen(false);
+                  }}
                 >
-                  ℹ️ Information
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">ℹ️</span>
+                    <span>Information</span>
+                  </div>
                 </button>
               </li>
             </ul>
           </nav>
-        </aside>
+        </div>
+      </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-auto">{renderSection()}</main>
-      </div>
+      {/* Main Content */}
+      <main className="w-full p-4 sm:p-6 lg:p-8 min-h-screen">
+        <div className="max-w-7xl mx-auto">
+          {renderSection()}
+        </div>
+      </main>
     </div>
   );
 }
