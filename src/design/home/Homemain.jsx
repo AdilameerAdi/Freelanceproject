@@ -1,9 +1,9 @@
 import Footer from "../Footer"
 import Home from "./home"
 import EventSlider from "./ev"
-export default function Homemain(){
+export default function Homemain({ events }){
     return<>
-    <EventSlider></EventSlider>
+    <EventSlider events={events}></EventSlider>
     <Home></Home>
     <Footer></Footer>
     </>

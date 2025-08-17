@@ -1,10 +1,10 @@
 import Events from "./events"
 import Footer from "../Footer"
 import TextEventSlider from "../home/ev";
-export default function EvenMain() {
+export default function EvenMain({ events }) {
 return<>
-<TextEventSlider></TextEventSlider>
-<Events></Events>
+<TextEventSlider events={events}></TextEventSlider>
+<Events events={events}></Events>
 <Footer></Footer>
 </>
 }

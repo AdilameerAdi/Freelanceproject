@@ -1,0 +1,10 @@
+CREATE TABLE events (
+  id BIGSERIAL PRIMARY KEY,
+  title TEXT NOT NULL,
+  date TEXT NOT NULL,
+  description TEXT NOT NULL,
+  icon TEXT DEFAULT 'game',
+  status TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);

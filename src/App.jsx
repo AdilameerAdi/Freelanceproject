@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { eventService } from "./services/supabase";
 
 import Navbar from "./design/NAvbar";
 
@@ -46,28 +47,55 @@ function App() {
     },
   ]);
 
+  // 🔹 Shared events state for admin management and user display
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch events from database on component mount
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  const loadEvents = async () => {
+    try {
+      setLoading(true);
+      const data = await eventService.getAllEvents();
+      setEvents(data);
+    } catch (error) {
+      console.error('Failed to load events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Router>
       <Layout>
         <Routes>
           <Route path="/admin" element={<AdminMain />} />
-          <Route path="/" element={<Homemain />} />
+          <Route path="/" element={<Homemain events={events} />} />
           <Route path="/blog" element={<BlogsectionMain />} />
           
           {/* Staff page gets staffMembers only */}
           <Route path="/staff" element={<StaffMain members={staffMembers} />} />
 
-          <Route path="/events" element={<EvenMain />} />
+          <Route path="/events" element={<EvenMain events={events} />} />
           <Route path="/support" element={<SupportMain />} />
           <Route path="/updates" element={<Mainupdates />} />
           <Route path="/info" element={<InformationMain />} />
           <Route path="/faqs" element={<Mainfaqs />} />
           <Route path="/reviews" element={<MainRev />} />
 
-          {/* Admin dashboard manages staffMembers */}
+          {/* Admin dashboard manages staffMembers and events */}
           <Route
             path="/admin-dashboard"
-            element={<AdminDashboard staffMembers={staffMembers} setStaffMembers={setStaffMembers} />}
+            element={<AdminDashboard 
+              staffMembers={staffMembers} 
+              setStaffMembers={setStaffMembers}
+              events={events}
+              setEvents={setEvents}
+              loadEvents={loadEvents}
+            />}
           />
         </Routes>
       </Layout>

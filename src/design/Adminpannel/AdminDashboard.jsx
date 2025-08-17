@@ -1,35 +1,85 @@
 import React, { useState } from "react";
+import { eventService } from "../../services/supabase";
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ staffMembers, setStaffMembers, events, setEvents, loadEvents }) {
   const [activeSection, setActiveSection] = useState("events");
+  
+  // Event Management State
+  const [eventForm, setEventForm] = useState({
+    title: "",
+    date: "",
+    description: "",
+    icon: "🎮",
+    status: "upcoming"
+  });
+  const [editingEventId, setEditingEventId] = useState(null);
+  const [showEventForm, setShowEventForm] = useState(false);
 
-  // Staff Members State (starts with empty stats)
-  const [staffMembers, setStaffMembers] = useState([
-    {
-      id: 1,
-      name: "Leader",
-      role: "Leader",
-      avatar: "https://i.pravatar.cc/100?img=1",
-      joined: "Dec 12th 2023",
-      posts: 0,
-      likes: 0,
-      points: 0,
-      hits: 0,
-    },
-    {
-      id: 2,
-      name: "Community Manager",
-      role: "Community Manager",
-      avatar: "https://i.pravatar.cc/100?img=2",
-      joined: "Dec 12th 2023",
-      posts: 0,
-      likes: 0,
-      points: 0,
-      hits: 0,
-    },
-  ]);
+  // Event Management Functions
+  const handleAddEvent = async () => {
+    if (eventForm.title && eventForm.date && eventForm.description) {
+      try {
+        await eventService.createEvent(eventForm);
+        await loadEvents(); // Refresh the events list
+        resetEventForm();
+        alert("Event created successfully!");
+      } catch (error) {
+        console.error('Error creating event:', error);
+        alert("Failed to create event. Please try again.");
+      }
+    }
+  };
 
-  // Update staff stats (posts, likes, hits)
+  const handleUpdateEvent = async () => {
+    try {
+      await eventService.updateEvent(editingEventId, eventForm);
+      await loadEvents(); // Refresh the events list
+      resetEventForm();
+      alert("Event updated successfully!");
+    } catch (error) {
+      console.error('Error updating event:', error);
+      alert("Failed to update event. Please try again.");
+    }
+  };
+
+  const handleDeleteEvent = async (id) => {
+    if (window.confirm("Are you sure you want to delete this event?")) {
+      try {
+        await eventService.deleteEvent(id);
+        await loadEvents(); // Refresh the events list
+        alert("Event deleted successfully!");
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        alert("Failed to delete event. Please try again.");
+      }
+    }
+  };
+
+  const handleEditEvent = (event) => {
+    setEventForm({
+      title: event.title,
+      date: event.date,
+      description: event.description,
+      icon: event.icon,
+      status: event.status
+    });
+    setEditingEventId(event.id);
+    setShowEventForm(true);
+  };
+
+  const resetEventForm = () => {
+    setEventForm({
+      title: "",
+      date: "",
+      description: "",
+      icon: "🎮",
+      status: "upcoming"
+    });
+    setEditingEventId(null);
+    setShowEventForm(false);
+  };
+
+  // Staff Management Functions
   const updateStaffStat = (id, field) => {
     setStaffMembers((prev) =>
       prev.map((staff) =>
@@ -38,22 +88,24 @@ export default function AdminDashboard() {
     );
   };
 
-  // Change profile photo
   const changePhoto = (id, newUrl) => {
-    setStaffMembers((prev) =>
-      prev.map((staff) =>
-        staff.id === id ? { ...staff, avatar: newUrl } : staff
-      )
-    );
+    if (newUrl) {
+      setStaffMembers((prev) =>
+        prev.map((staff) =>
+          staff.id === id ? { ...staff, avatar: newUrl } : staff
+        )
+      );
+    }
   };
 
-  // Change join date
   const changeJoinDate = (id, newDate) => {
-    setStaffMembers((prev) =>
-      prev.map((staff) =>
-        staff.id === id ? { ...staff, joined: newDate } : staff
-      )
-    );
+    if (newDate) {
+      setStaffMembers((prev) =>
+        prev.map((staff) =>
+          staff.id === id ? { ...staff, joined: newDate } : staff
+        )
+      );
+    }
   };
 
   const renderSection = () => {
@@ -61,29 +113,142 @@ export default function AdminDashboard() {
       case "events":
         return (
           <div>
-            <h2 className="text-2xl font-semibold mb-4">Events</h2>
-            <p className="text-gray-600 mb-4">
-              Add, update, or remove events displayed on the slider/banner.
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">Event Management</h2>
+            <p className="text-gray-600 mb-6">
+              Manage all events that appear on the website. These events will be displayed on the homepage slider and events page.
             </p>
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <h3 className="font-semibold mb-2">Existing Events:</h3>
-              <ul className="list-disc list-inside mb-4">
-                <li>
-                  Event 1
-                  <button className="ml-2 px-2 py-1 bg-red-500 text-white rounded">
-                    Delete
+
+            {/* Add/Edit Event Form */}
+            {showEventForm && (
+              <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <h3 className="text-xl font-semibold mb-4">
+                  {editingEventId ? "Edit Event" : "Add New Event"}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Event Title</label>
+                    <input
+                      type="text"
+                      value={eventForm.title}
+                      onChange={(e) => setEventForm({...eventForm, title: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter event title"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Event Date</label>
+                    <input
+                      type="text"
+                      value={eventForm.date}
+                      onChange={(e) => setEventForm({...eventForm, date: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="e.g., August 25, 2025"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Icon/Emoji</label>
+                    <input
+                      type="text"
+                      value={eventForm.icon}
+                      onChange={(e) => setEventForm({...eventForm, icon: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="e.g., 🔥"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Status</label>
+                    <select
+                      value={eventForm.status}
+                      onChange={(e) => setEventForm({...eventForm, status: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="upcoming">Upcoming</option>
+                      <option value="ongoing">Ongoing</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-1">Description</label>
+                    <textarea
+                      value={eventForm.description}
+                      onChange={(e) => setEventForm({...eventForm, description: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows="3"
+                      placeholder="Enter event description"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={editingEventId ? handleUpdateEvent : handleAddEvent}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  >
+                    {editingEventId ? "Update Event" : "Add Event"}
                   </button>
-                </li>
-                <li>
-                  Event 2
-                  <button className="ml-2 px-2 py-1 bg-red-500 text-white rounded">
-                    Delete
+                  <button
+                    onClick={resetEventForm}
+                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+                  >
+                    Cancel
                   </button>
-                </li>
-              </ul>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded">
-                Add New Event
+                </div>
+              </div>
+            )}
+
+            {/* Add New Event Button */}
+            {!showEventForm && (
+              <button
+                onClick={() => setShowEventForm(true)}
+                className="mb-6 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              >
+                + Add New Event
               </button>
+            )}
+
+            {/* Events List */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-xl font-semibold mb-4">Current Events ({events.length})</h3>
+              {events.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No events created yet. Click "Add New Event" to get started.</p>
+              ) : (
+                <div className="space-y-4">
+                  {events.map((event) => (
+                    <div key={event.id} className="border rounded-lg p-4 hover:shadow-md transition">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-2xl">{event.icon}</span>
+                            <h4 className="text-lg font-semibold">{event.title}</h4>
+                            <span className={`px-2 py-1 text-xs rounded-full ${
+                              event.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
+                              event.status === 'ongoing' ? 'bg-green-100 text-green-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {event.status}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1">📅 {event.date}</p>
+                          <p className="text-gray-700">{event.description}</p>
+                        </div>
+                        <div className="flex gap-2 ml-4">
+                          <button
+                            onClick={() => handleEditEvent(event)}
+                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteEvent(event.id)}
+                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         );
@@ -91,9 +256,9 @@ export default function AdminDashboard() {
       case "staff":
         return (
           <div>
-            <h2 className="text-2xl font-semibold mb-4">Staff Management</h2>
-            <p className="text-gray-600 mb-4">
-              View and manage staff members, assign roles, and update profiles.
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">Staff Management</h2>
+            <p className="text-gray-600 mb-6">
+              View and manage staff members, update their profiles and statistics.
             </p>
 
             <div className="grid gap-6 md:grid-cols-2">
@@ -110,7 +275,7 @@ export default function AdminDashboard() {
                     <img
                       src={staff.avatar}
                       alt={staff.name}
-                      className="w-16 h-16 rounded-full border-4 border-white cursor-pointer"
+                      className="w-16 h-16 rounded-full border-4 border-white cursor-pointer hover:opacity-80"
                       onClick={() => updateStaffStat(staff.id, "hits")}
                     />
                     <div className="ml-4">
@@ -122,45 +287,43 @@ export default function AdminDashboard() {
                   {/* Stats */}
                   <div className="px-6 py-3 text-sm text-gray-700 border-t">
                     <p>Member since {staff.joined}</p>
-                    <p>
-                      Posts: {staff.posts}, Likes: {staff.likes}, Points:{" "}
-                      {staff.points}, Profile Hits: {staff.hits}
-                    </p>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      <span>📝 Posts: {staff.posts}</span>
+                      <span>❤️ Likes: {staff.likes}</span>
+                      <span>⭐ Points: {staff.points}</span>
+                      <span>👁️ Profile Hits: {staff.hits}</span>
+                    </div>
                   </div>
 
                   {/* Controls */}
-                  <div className="px-6 py-3 flex gap-2 border-t">
+                  <div className="px-6 py-3 flex flex-wrap gap-2 border-t">
                     <button
                       onClick={() => updateStaffStat(staff.id, "posts")}
-                      className="px-3 py-1 bg-blue-500 text-white rounded"
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
                     >
                       + Post
                     </button>
                     <button
                       onClick={() => updateStaffStat(staff.id, "likes")}
-                      className="px-3 py-1 bg-green-500 text-white rounded"
+                      className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
                     >
                       + Like
                     </button>
                     <button
-                      onClick={() =>
-                        changePhoto(
-                          staff.id,
-                          prompt("Enter new photo URL:", staff.avatar)
-                        )
-                      }
-                      className="px-3 py-1 bg-purple-500 text-white rounded"
+                      onClick={() => {
+                        const newUrl = prompt("Enter new photo URL:", staff.avatar);
+                        changePhoto(staff.id, newUrl);
+                      }}
+                      className="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 transition"
                     >
                       Change Photo
                     </button>
                     <button
-                      onClick={() =>
-                        changeJoinDate(
-                          staff.id,
-                          prompt("Enter new join date:", staff.joined)
-                        )
-                      }
-                      className="px-3 py-1 bg-yellow-500 text-white rounded"
+                      onClick={() => {
+                        const newDate = prompt("Enter new join date:", staff.joined);
+                        changeJoinDate(staff.id, newDate);
+                      }}
+                      className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
                     >
                       Change Date
                     </button>
@@ -174,43 +337,61 @@ export default function AdminDashboard() {
       case "pending":
         return (
           <div>
-            <h2 className="text-2xl font-semibold mb-4">Pending Problems</h2>
-            <p className="text-gray-600 mb-4">
-              View pending problems submitted by users. Respond, resolve, or
-              assign them to staff.
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">Pending Problems</h2>
+            <p className="text-gray-600 mb-6">
+              View and manage pending problems submitted by users.
             </p>
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <p className="text-gray-500 text-center py-8">No pending problems at the moment.</p>
+            </div>
           </div>
         );
 
       case "news":
         return (
           <div>
-            <h2 className="text-2xl font-semibold mb-4">Latest News</h2>
-            <p className="text-gray-600 mb-4">
-              Create and manage news posts for users.
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">News Management</h2>
+            <p className="text-gray-600 mb-6">
+              Create and manage news posts for the website.
             </p>
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                + Create News Post
+              </button>
+              <p className="text-gray-500 text-center py-8 mt-4">News management coming soon...</p>
+            </div>
           </div>
         );
 
       case "updates":
         return (
           <div>
-            <h2 className="text-2xl font-semibold mb-4">Updates</h2>
-            <p className="text-gray-600 mb-4">
-              Post updates related to system or user activities.
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">Updates</h2>
+            <p className="text-gray-600 mb-6">
+              Post system updates and announcements.
             </p>
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                + Post Update
+              </button>
+              <p className="text-gray-500 text-center py-8 mt-4">Updates management coming soon...</p>
+            </div>
           </div>
         );
 
       case "info":
         return (
           <div>
-            <h2 className="text-2xl font-semibold mb-4">
-              Information / Notices
-            </h2>
-            <p className="text-gray-600 mb-4">
-              Post important notices or upcoming events for users.
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">Information & Notices</h2>
+            <p className="text-gray-600 mb-6">
+              Post important notices and information for users.
             </p>
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                + Create Notice
+              </button>
+              <p className="text-gray-500 text-center py-8 mt-4">Information management coming soon...</p>
+            </div>
           </div>
         );
 
@@ -220,84 +401,103 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Heading */}
-      <header className="bg-blue-600 text-white p-6">
-        <h1 className="text-3xl font-bold text-center">
-          Manage Everything Through This Admin Panel
-        </h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 shadow-lg">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-center">
+            🎮 NosDionisy Admin Dashboard
+          </h1>
+          <p className="text-center mt-2 text-blue-100">
+            Manage events, staff, and content from one place
+          </p>
+        </div>
       </header>
 
-      {/* Main layout */}
+      {/* Main Layout */}
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-1/4 bg-gray-200 p-4 min-h-screen">
-          <ul className="space-y-2">
-            <li
-              className={`p-2 rounded cursor-pointer ${
-                activeSection === "events"
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-gray-300"
-              }`}
-              onClick={() => setActiveSection("events")}
-            >
-              Events
-            </li>
-            <li
-              className={`p-2 rounded cursor-pointer ${
-                activeSection === "staff"
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-gray-300"
-              }`}
-              onClick={() => setActiveSection("staff")}
-            >
-              Staff Management
-            </li>
-            <li
-              className={`p-2 rounded cursor-pointer ${
-                activeSection === "pending"
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-gray-300"
-              }`}
-              onClick={() => setActiveSection("pending")}
-            >
-              Pending Problems
-            </li>
-            <li
-              className={`p-2 rounded cursor-pointer ${
-                activeSection === "news"
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-gray-300"
-              }`}
-              onClick={() => setActiveSection("news")}
-            >
-              Latest News
-            </li>
-            <li
-              className={`p-2 rounded cursor-pointer ${
-                activeSection === "updates"
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-gray-300"
-              }`}
-              onClick={() => setActiveSection("updates")}
-            >
-              Updates
-            </li>
-            <li
-              className={`p-2 rounded cursor-pointer ${
-                activeSection === "info"
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-gray-300"
-              }`}
-              onClick={() => setActiveSection("info")}
-            >
-              Information / Notices
-            </li>
-          </ul>
+        <aside className="w-64 bg-white shadow-lg min-h-screen">
+          <nav className="p-4">
+            <ul className="space-y-2">
+              <li>
+                <button
+                  className={`w-full text-left p-3 rounded-lg transition ${
+                    activeSection === "events"
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => setActiveSection("events")}
+                >
+                  🎉 Events
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`w-full text-left p-3 rounded-lg transition ${
+                    activeSection === "staff"
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => setActiveSection("staff")}
+                >
+                  👥 Staff Management
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`w-full text-left p-3 rounded-lg transition ${
+                    activeSection === "pending"
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => setActiveSection("pending")}
+                >
+                  ⚠️ Pending Problems
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`w-full text-left p-3 rounded-lg transition ${
+                    activeSection === "news"
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => setActiveSection("news")}
+                >
+                  📰 Latest News
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`w-full text-left p-3 rounded-lg transition ${
+                    activeSection === "updates"
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => setActiveSection("updates")}
+                >
+                  🔄 Updates
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`w-full text-left p-3 rounded-lg transition ${
+                    activeSection === "info"
+                      ? "bg-blue-600 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => setActiveSection("info")}
+                >
+                  ℹ️ Information
+                </button>
+              </li>
+            </ul>
+          </nav>
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">{renderSection()}</main>
+        <main className="flex-1 p-8">{renderSection()}</main>
       </div>
     </div>
   );

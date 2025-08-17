@@ -2,34 +2,23 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-export default function TextEventSlider() {
-  const events = [
-    {
-      title: "🔥 Summer PvP Tournament",
-      date: "August 25, 2025",
-      description: "Join the ultimate PvP showdown and win rare rewards!",
-    },
-    {
-      title: "🎃 Halloween Raid Event",
-      date: "October 31, 2025",
-      description: "Face spooky bosses and collect exclusive Halloween items!",
-    },
-    {
-      title: "❄️ Winter Festival",
-      date: "December 20, 2025",
-      description: "Celebrate winter with special quests and costumes!",
-    },
-  ];
+export default function TextEventSlider({ events = [] }) {
+  // Filter to only show upcoming and ongoing events in the slider
+  const sliderEvents = events.filter(event => 
+    event.status === "upcoming" || event.status === "ongoing"
+  );
 
   const [index, setIndex] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % events.length);
-    }, 5000); // auto-slide every 5s
-    return () => clearInterval(timer);
-  }, [events.length]);
+    if (sliderEvents.length > 0) {
+      const timer = setInterval(() => {
+        setIndex((prev) => (prev + 1) % sliderEvents.length);
+      }, 5000); // auto-slide every 5s
+      return () => clearInterval(timer);
+    }
+  }, [sliderEvents.length]);
 
   return (
     <div className="w-full bg-gradient-to-r mt-5 from-gray-900 via-gray-800 to-gray-900 py-12 px-6 shadow-lg">
@@ -40,20 +29,35 @@ export default function TextEventSlider() {
 
         {/* Event Text Slider */}
         <div className="relative h-36 flex items-center justify-center overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -40 }}
-              transition={{ duration: 0.7 }}
-              className="text-center"
-            >
-              <h3 className="text-3xl font-bold">{events[index].title}</h3>
-              <p className="text-sm text-gray-400">{events[index].date}</p>
-              <p className="mt-2 text-gray-300">{events[index].description}</p>
-            </motion.div>
-          </AnimatePresence>
+          {sliderEvents.length > 0 ? (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -40 }}
+                transition={{ duration: 0.7 }}
+                className="text-center"
+              >
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <span className="text-4xl">{sliderEvents[index].icon}</span>
+                  <h3 className="text-3xl font-bold">{sliderEvents[index].title}</h3>
+                </div>
+                <p className="text-sm text-gray-400">📅 {sliderEvents[index].date}</p>
+                <p className="mt-2 text-gray-300">{sliderEvents[index].description}</p>
+                {sliderEvents[index].status === "ongoing" && (
+                  <span className="inline-block mt-2 px-3 py-1 bg-green-500/30 text-green-300 rounded-full text-sm animate-pulse">
+                    🔴 LIVE NOW
+                  </span>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          ) : (
+            <div className="text-center">
+              <h3 className="text-3xl font-bold text-gray-400">No Events Available</h3>
+              <p className="text-gray-500 mt-2">Check back later for upcoming events!</p>
+            </div>
+          )}
         </div>
 
         {/* Animated Buttons */}
