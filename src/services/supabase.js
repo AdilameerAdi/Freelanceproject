@@ -255,16 +255,14 @@ export const staffService = {
 
 // Posts related database operations
 export const postService = {
-  // Get all posts (for news section) - trending posts first, then by creation date
+  // Get all posts (for news section) - sorted by newest first
   async getAllPosts() {
     try {
       const { data, error } = await supabase
         .from('posts')
         .select('*')
         .eq('is_published', true)
-        .order('is_trending', { ascending: false }) // Trending posts first
-        .order('likes_count', { ascending: false }) // Then by most likes
-        .order('created_at', { ascending: false }) // Then by newest
+        .order('created_at', { ascending: false }) // Newest posts first
       
       if (error) throw error
       return data || []
@@ -274,7 +272,7 @@ export const postService = {
     }
   },
 
-  // Get paginated posts (for news section with pagination)
+  // Get paginated posts (for news section with pagination) - sorted by newest first
   async getPaginatedPosts(page = 1, limit = 10) {
     try {
       const offset = (page - 1) * limit
@@ -283,9 +281,7 @@ export const postService = {
         .from('posts')
         .select('*')
         .eq('is_published', true)
-        .order('is_trending', { ascending: false }) // Trending posts first
-        .order('likes_count', { ascending: false }) // Then by most likes
-        .order('created_at', { ascending: false }) // Then by newest
+        .order('created_at', { ascending: false }) // Newest posts first
         .range(offset, offset + limit - 1)
       
       if (error) throw error
@@ -679,5 +675,137 @@ export const supportService = {
       { value: 'high', label: 'High', color: 'text-orange-500' },
       { value: 'urgent', label: 'Urgent', color: 'text-red-500' }
     ]
+  }
+}
+
+// Comments related database operations
+export const commentService = {
+  // Get comments for a post
+  async getCommentsByPost(postId) {
+    try {
+      const { data, error } = await supabase
+        .from('post_comments')
+        .select('*')
+        .eq('post_id', postId)
+        .is('parent_comment_id', null) // Only get top-level comments
+        .order('created_at', { ascending: false })
+      
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error('Error fetching comments:', error)
+      return []
+    }
+  },
+
+  // Get replies for a comment
+  async getRepliesByComment(commentId) {
+    try {
+      const { data, error } = await supabase
+        .from('post_comments')
+        .select('*')
+        .eq('parent_comment_id', commentId)
+        .order('created_at', { ascending: true })
+      
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error('Error fetching replies:', error)
+      return []
+    }
+  },
+
+  // Create a new comment
+  async createComment(commentData) {
+    try {
+      const { data, error } = await supabase
+        .from('post_comments')
+        .insert([{
+          post_id: commentData.post_id,
+          user_name: commentData.user_name,
+          user_identifier: commentData.user_identifier,
+          content: commentData.content,
+          parent_comment_id: commentData.parent_comment_id || null,
+          created_at: new Date().toISOString()
+        }])
+        .select()
+      
+      if (error) throw error
+      return data[0]
+    } catch (error) {
+      console.error('Error creating comment:', error)
+      throw error
+    }
+  },
+
+  // Like a comment
+  async likeComment(commentId, userIdentifier) {
+    try {
+      // Check if user already liked this comment
+      const { data: existingLike } = await supabase
+        .from('comment_likes')
+        .select('id')
+        .eq('comment_id', commentId)
+        .eq('user_identifier', userIdentifier)
+        .single()
+
+      if (existingLike) {
+        return { success: false, message: 'Already liked this comment' }
+      }
+
+      // Add like
+      const { error: likeError } = await supabase
+        .from('comment_likes')
+        .insert([{
+          comment_id: commentId,
+          user_identifier: userIdentifier,
+          created_at: new Date().toISOString()
+        }])
+
+      if (likeError) throw likeError
+
+      // Get updated likes count
+      const { data: likesData, error: countError } = await supabase
+        .from('comment_likes')
+        .select('id')
+        .eq('comment_id', commentId)
+
+      if (countError) throw countError
+
+      const newLikesCount = likesData.length
+
+      // Update comment likes count
+      const { error: updateError } = await supabase
+        .from('post_comments')
+        .update({ 
+          likes_count: newLikesCount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', commentId)
+
+      if (updateError) throw updateError
+
+      return { success: true, likesCount: newLikesCount }
+    } catch (error) {
+      console.error('Error liking comment:', error)
+      throw error
+    }
+  },
+
+  // Delete comment
+  async deleteComment(commentId, userIdentifier) {
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .delete()
+        .eq('id', commentId)
+        .eq('user_identifier', userIdentifier) // Only allow deleting own comments
+      
+      if (error) throw error
+      return true
+    } catch (error) {
+      console.error('Error deleting comment:', error)
+      throw error
+    }
   }
 }

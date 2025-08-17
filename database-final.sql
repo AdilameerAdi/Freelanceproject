@@ -65,3 +65,23 @@ CREATE TABLE support_tickets (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+CREATE TABLE post_comments (
+  id BIGSERIAL PRIMARY KEY,
+  post_id BIGINT REFERENCES posts(id) ON DELETE CASCADE,
+  user_name TEXT NOT NULL,
+  user_identifier TEXT NOT NULL,
+  content TEXT NOT NULL,
+  likes_count INTEGER DEFAULT 0,
+  parent_comment_id BIGINT REFERENCES post_comments(id) ON DELETE CASCADE, -- For replies
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE comment_likes (
+  id BIGSERIAL PRIMARY KEY,
+  comment_id BIGINT REFERENCES post_comments(id) ON DELETE CASCADE,
+  user_identifier TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(comment_id, user_identifier)
+);
