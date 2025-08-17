@@ -220,53 +220,53 @@ export default function StaffPanel({ staffMember, onLogout }) {
       case "dashboard":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">Staff Dashboard</h2>
+            <h2 className="text-3xl font-bold mb-6 text-white">Staff Dashboard</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {/* Stats Cards */}
-              <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div className="flex items-center">
                   <div className="p-3 rounded-full bg-blue-100 text-blue-600">
                     📝
                   </div>
                   <div className="ml-4">
                     <h3 className="text-2xl font-bold">{staffMember.posts}</h3>
-                    <p className="text-gray-600">Total Posts</p>
+                    <p className="text-gray-300">Total Posts</p>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div className="flex items-center">
                   <div className="p-3 rounded-full bg-green-100 text-green-600">
                     ❤️
                   </div>
                   <div className="ml-4">
                     <h3 className="text-2xl font-bold">{staffMember.likes}</h3>
-                    <p className="text-gray-600">Total Likes</p>
+                    <p className="text-gray-300">Total Likes</p>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div className="flex items-center">
                   <div className="p-3 rounded-full bg-blue-100 text-blue-600">
                     ⭐
                   </div>
                   <div className="ml-4">
                     <h3 className="text-2xl font-bold">{staffMember.points}</h3>
-                    <p className="text-gray-600">Total Points</p>
+                    <p className="text-gray-300">Total Points</p>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                 <div className="flex items-center">
                   <div className="p-3 rounded-full bg-purple-100 text-purple-600">
                     👁️
                   </div>
                   <div className="ml-4">
                     <h3 className="text-2xl font-bold">{staffMember.hits}</h3>
-                    <p className="text-gray-600">Profile Hits</p>
+                    <p className="text-gray-300">Profile Hits</p>
                   </div>
                 </div>
               </div>
@@ -274,7 +274,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
 
             {/* Welcome Section */}
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-xl font-semibold mb-4">Welcome back, {staffMember.name}!</h3>
+              <h3 className="text-xl font-semibold mb-4 text-white">Welcome back, {staffMember.name}!</h3>
               <div className="flex items-center space-x-4 mb-4">
                 <img
                   src={staffMember.avatar || 'https://i.pravatar.cc/100?img=1'}
@@ -282,12 +282,12 @@ export default function StaffPanel({ staffMember, onLogout }) {
                   className="w-16 h-16 rounded-full border-4 border-blue-500"
                 />
                 <div>
-                  <h4 className="text-lg font-semibold">{staffMember.name}</h4>
-                  <p className="text-gray-600">{staffMember.role}</p>
-                  <p className="text-sm text-gray-500">Member since {staffMember.joined}</p>
+                  <h4 className="text-lg font-semibold text-white">{staffMember.name}</h4>
+                  <p className="text-gray-300">{staffMember.role}</p>
+                  <p className="text-sm text-gray-400">Member since {staffMember.joined}</p>
                 </div>
               </div>
-              <p className="text-gray-700">
+              <p className="text-gray-200">
                 You are logged in as a <strong>{staffMember.role}</strong>. Use the navigation menu to access your staff tools and manage your responsibilities.
               </p>
             </div>
@@ -297,7 +297,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
       case "profile":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">My Profile</h2>
+            <h2 className="text-3xl font-bold mb-6 text-white">My Profile</h2>
             <div className="bg-white rounded-lg shadow-lg p-6">
               <div className="flex items-center space-x-6 mb-6">
                 <img
@@ -306,30 +306,30 @@ export default function StaffPanel({ staffMember, onLogout }) {
                   className="w-24 h-24 rounded-full border-4 border-blue-500"
                 />
                 <div>
-                  <h3 className="text-2xl font-bold">{staffMember.name}</h3>
-                  <p className="text-lg text-gray-600">{staffMember.role}</p>
-                  <p className="text-sm text-gray-500">@{staffMember.username}</p>
+                  <h3 className="text-2xl font-bold text-white">{staffMember.name}</h3>
+                  <p className="text-lg text-gray-300">{staffMember.role}</p>
+                  <p className="text-sm text-gray-400">@{staffMember.username}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-semibold mb-2">Account Information</h4>
+                  <h4 className="font-semibold mb-2 text-white">Account Information</h4>
                   <div className="space-y-2 text-sm">
-                    <p><span className="font-medium">Username:</span> {staffMember.username}</p>
-                    <p><span className="font-medium">Role:</span> {staffMember.role}</p>
-                    <p><span className="font-medium">Joined:</span> {staffMember.joined}</p>
-                    <p><span className="font-medium">Status:</span> <span className="text-green-600">Active</span></p>
+                    <p className="text-gray-200"><span className="font-medium">Username:</span> {staffMember.username}</p>
+                    <p className="text-gray-200"><span className="font-medium">Role:</span> {staffMember.role}</p>
+                    <p className="text-gray-200"><span className="font-medium">Joined:</span> {staffMember.joined}</p>
+                    <p className="text-gray-200"><span className="font-medium">Status:</span> <span className="text-green-400">Active</span></p>
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold mb-2">Activity Statistics</h4>
+                  <h4 className="font-semibold mb-2 text-white">Activity Statistics</h4>
                   <div className="space-y-2 text-sm">
-                    <p><span className="font-medium">Posts:</span> {staffMember.posts}</p>
-                    <p><span className="font-medium">Likes Received:</span> {staffMember.likes}</p>
-                    <p><span className="font-medium">Points:</span> {staffMember.points}</p>
-                    <p><span className="font-medium">Profile Views:</span> {staffMember.hits}</p>
+                    <p className="text-gray-200"><span className="font-medium">Posts:</span> {staffMember.posts}</p>
+                    <p className="text-gray-200"><span className="font-medium">Likes Received:</span> {staffMember.likes}</p>
+                    <p className="text-gray-200"><span className="font-medium">Points:</span> {staffMember.points}</p>
+                    <p className="text-gray-200"><span className="font-medium">Profile Views:</span> {staffMember.hits}</p>
                   </div>
                 </div>
               </div>
@@ -340,8 +340,8 @@ export default function StaffPanel({ staffMember, onLogout }) {
       case "posts":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">Create News Post</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-3xl font-bold mb-6 text-white">Create News Post</h2>
+            <p className="text-gray-300 mb-6">
               Create posts that will appear in the news section for all users to see.
             </p>
 
@@ -481,8 +481,8 @@ export default function StaffPanel({ staffMember, onLogout }) {
       case "managePosts":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">Manage My Posts</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-3xl font-bold mb-6 text-white">Manage My Posts</h2>
+            <p className="text-gray-300 mb-6">
               View, edit, and delete your published posts.
             </p>
 
@@ -497,24 +497,24 @@ export default function StaffPanel({ staffMember, onLogout }) {
             {loadingPosts ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading your posts...</p>
+                <p className="text-gray-300">Loading your posts...</p>
               </div>
             ) : userPosts.length === 0 ? (
               <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-                <p className="text-gray-600 text-lg">You haven't created any posts yet.</p>
-                <p className="text-gray-500 text-sm mt-2">Go to "Create Posts" to write your first post!</p>
+                <p className="text-gray-300 text-lg">You haven't created any posts yet.</p>
+                <p className="text-gray-400 text-sm mt-2">Go to "Create Posts" to write your first post!</p>
               </div>
             ) : (
               <div className="space-y-6">
                 {userPosts.map((post) => (
-                  <div key={post.id} className="bg-white rounded-lg shadow-lg p-6">
+                  <div key={post.id} className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
                     {editingPost === post.id ? (
                       // Edit Mode
                       <div>
-                        <h3 className="text-lg font-semibold mb-4">Edit Post</h3>
+                        <h3 className="text-lg font-semibold mb-4 text-white">Edit Post</h3>
                         <div className="space-y-4">
                           <div>
-                            <label className="block text-sm font-medium mb-2">Title</label>
+                            <label className="block text-sm font-medium mb-2 text-gray-200">Title</label>
                             <input
                               type="text"
                               value={editForm.title}
@@ -523,7 +523,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium mb-2">Excerpt</label>
+                            <label className="block text-sm font-medium mb-2 text-gray-200">Excerpt</label>
                             <input
                               type="text"
                               value={editForm.excerpt}
@@ -577,7 +577,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
                             )}
                           </div>
                           <div>
-                            <label className="block text-sm font-medium mb-2">Content</label>
+                            <label className="block text-sm font-medium mb-2 text-gray-200">Content</label>
                             <textarea
                               value={editForm.content}
                               onChange={(e) => setEditForm({...editForm, content: e.target.value})}
@@ -594,7 +594,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
                             </button>
                             <button
                               onClick={cancelEditing}
-                              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+                              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
                             >
                               Cancel
                             </button>
@@ -606,8 +606,8 @@ export default function StaffPanel({ staffMember, onLogout }) {
                       <div>
                         <div className="flex justify-between items-start mb-4">
                           <div className="flex-1">
-                            <h3 className="text-xl font-bold text-gray-800 mb-2">{post.title}</h3>
-                            <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                            <h3 className="text-xl font-bold text-white mb-2">{post.title}</h3>
+                            <div className="flex items-center gap-4 text-sm text-gray-300 mb-3">
                               <span>Created: {new Date(post.created_at).toLocaleDateString()}</span>
                               <span>👍 {post.likes_count || 0} likes</span>
                               {post.is_trending && (
@@ -633,12 +633,12 @@ export default function StaffPanel({ staffMember, onLogout }) {
                           </div>
                         </div>
                         
-                        <div className="bg-gray-50 rounded-lg p-4">
-                          <p className="text-gray-700 leading-relaxed">
+                        <div className="bg-gray-700 rounded-lg p-4">
+                          <p className="text-gray-200 leading-relaxed">
                             {post.content.length > 300 ? post.content.substring(0, 300) + '...' : post.content}
                           </p>
                           {post.content.length > 300 && (
-                            <p className="text-blue-600 text-sm mt-2">Click edit to see full content</p>
+                            <p className="text-blue-400 text-sm mt-2">Click edit to see full content</p>
                           )}
                         </div>
                       </div>
@@ -653,10 +653,10 @@ export default function StaffPanel({ staffMember, onLogout }) {
       case "tools":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">Staff Tools</h2>
+            <h2 className="text-3xl font-bold mb-6 text-white">Staff Tools</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+              <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
+                <h3 className="text-lg font-semibold mb-4 text-white">Quick Actions</h3>
                 <div className="space-y-2">
                   <button className="w-full text-left p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition">
                     📢 Send Announcement
@@ -673,9 +673,9 @@ export default function StaffPanel({ staffMember, onLogout }) {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-lg font-semibold mb-4">Role-Specific Tools</h3>
-                <p className="text-gray-600 mb-4">Tools available for: <strong>{staffMember.role}</strong></p>
+              <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
+                <h3 className="text-lg font-semibold mb-4 text-white">Role-Specific Tools</h3>
+                <p className="text-gray-300 mb-4">Tools available for: <strong className="text-white">{staffMember.role}</strong></p>
                 <div className="space-y-2">
                   {staffMember.role === 'Developer' && (
                     <>
@@ -734,7 +734,7 @@ export default function StaffPanel({ staffMember, onLogout }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       {/* Header */}
       <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 shadow-lg">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -758,15 +758,15 @@ export default function StaffPanel({ staffMember, onLogout }) {
       {/* Main Layout */}
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-64 bg-white shadow-lg min-h-screen">
+        <aside className="w-64 bg-gray-800 shadow-lg min-h-screen border-r border-gray-700">
           <nav className="p-4">
             <ul className="space-y-2">
               <li>
                 <button
                   className={`w-full text-left p-3 rounded-lg transition ${
                     activeSection === "dashboard"
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-100"
+                      ? "bg-purple-600 text-white"
+                      : "hover:bg-gray-700 text-gray-300"
                   }`}
                   onClick={() => setActiveSection("dashboard")}
                 >
@@ -777,8 +777,8 @@ export default function StaffPanel({ staffMember, onLogout }) {
                 <button
                   className={`w-full text-left p-3 rounded-lg transition ${
                     activeSection === "profile"
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-100"
+                      ? "bg-purple-600 text-white"
+                      : "hover:bg-gray-700 text-gray-300"
                   }`}
                   onClick={() => setActiveSection("profile")}
                 >
@@ -789,8 +789,8 @@ export default function StaffPanel({ staffMember, onLogout }) {
                 <button
                   className={`w-full text-left p-3 rounded-lg transition ${
                     activeSection === "posts"
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-100"
+                      ? "bg-purple-600 text-white"
+                      : "hover:bg-gray-700 text-gray-300"
                   }`}
                   onClick={() => setActiveSection("posts")}
                 >
@@ -801,8 +801,8 @@ export default function StaffPanel({ staffMember, onLogout }) {
                 <button
                   className={`w-full text-left p-3 rounded-lg transition ${
                     activeSection === "managePosts"
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-100"
+                      ? "bg-purple-600 text-white"
+                      : "hover:bg-gray-700 text-gray-300"
                   }`}
                   onClick={() => setActiveSection("managePosts")}
                 >
@@ -813,8 +813,8 @@ export default function StaffPanel({ staffMember, onLogout }) {
                 <button
                   className={`w-full text-left p-3 rounded-lg transition ${
                     activeSection === "tools"
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-100"
+                      ? "bg-purple-600 text-white"
+                      : "hover:bg-gray-700 text-gray-300"
                   }`}
                   onClick={() => setActiveSection("tools")}
                 >
