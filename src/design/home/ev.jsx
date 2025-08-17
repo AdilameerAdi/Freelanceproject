@@ -62,7 +62,7 @@ export default function TextEventSlider({ events = [] }) {
         <div className="absolute bottom-32 right-1/3 w-2 h-2 bg-green-400 rounded-full animate-ping opacity-20"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto text-center relative z-10">
+      <div className="max-w-6xl mx-auto text-center relative ">
         <motion.h2 
           className="text-4xl font-bold mb-8 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent"
           initial={{ opacity: 0, y: -20 }}
@@ -82,7 +82,7 @@ export default function TextEventSlider({ events = [] }) {
               <>
                 <motion.button
                   onClick={prevSlide}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-gray-800/80 hover:bg-gray-700 text-white p-3 rounded-full transition-all duration-200 shadow-lg"
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2  bg-gray-800/80 hover:bg-gray-700 text-white p-3 rounded-full transition-all duration-200 shadow-lg"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -91,7 +91,7 @@ export default function TextEventSlider({ events = [] }) {
                 
                 <motion.button
                   onClick={nextSlide}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-gray-800/80 hover:bg-gray-700 text-white p-3 rounded-full transition-all duration-200 shadow-lg"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2  bg-gray-800/80 hover:bg-gray-700 text-white p-3 rounded-full transition-all duration-200 shadow-lg"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -104,7 +104,7 @@ export default function TextEventSlider({ events = [] }) {
             {sliderEvents.length > 1 && (
               <motion.button
                 onClick={() => setIsPaused(!isPaused)}
-                className="absolute top-4 right-4 z-20 bg-gray-800/80 hover:bg-gray-700 text-white p-2 rounded-full transition-all duration-200 shadow-lg"
+                className="absolute top-4 right-4  bg-gray-800/80 hover:bg-gray-700 text-white p-2 rounded-full transition-all duration-200 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -136,7 +136,7 @@ export default function TextEventSlider({ events = [] }) {
                       ease: "easeInOut" 
                     }}
                   >
-                    <span className="text-6xl drop-shadow-lg relative z-10">
+                    <span className="text-6xl drop-shadow-lg relative ">
                       {sliderEvents[index].icon}
                     </span>
                     {sliderEvents[index].status === "ongoing" && (

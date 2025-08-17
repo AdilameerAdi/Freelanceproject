@@ -5,64 +5,69 @@ export default function Information() {
   const sections = [
     {
       title: "Getting Started",
-      description: "Start your epic journey! Install the game, set up your hero, and prepare for adventure.",
-      links: ["Download Guide", "Account Setup", "Beginner’s Path"],
+      description: "Forge your path into the world of Nos Dionisy. Download the client, create your hero, and step into battle.",
+      links: ["Download Client", "Create Account", "New Player Guide"],
     },
     {
       title: "Gameplay Basics",
-      description: "Master combat, leveling, and survival in a world full of danger.",
-      links: ["Classes & Roles", "Leveling Guide", "PvE & PvP"],
+      description: "Learn to master combat, explore dungeons, and rise in power as a true warrior of Dionisy.",
+      links: ["Classes & Skills", "Leveling Guide", "PvP & Arena"],
     },
     {
       title: "World & Lore",
-      description: "Uncover the legends, regions, and ancient creatures of the realm.",
-      links: ["Storyline", "Maps & Regions", "Bosses & Dungeons"],
+      description: "Discover the dark legends, ancient ruins, and monstrous foes that shape this universe.",
+      links: ["Main Storyline", "Regions & Maps", "Bosses & Raids"],
     },
     {
       title: "Economy & Items",
-      description: "Earn, trade, craft, and hunt for legendary treasures.",
-      links: ["Gold & Currency", "Crafting", "Legendary Loot"],
+      description: "Trade with adventurers, craft powerful artifacts, and uncover legendary loot.",
+      links: ["Gold & Trading", "Crafting System", "Rare Treasures"],
     },
     {
       title: "Support & FAQ",
-      description: "Need help? Find answers or contact our support guild.",
-      links: ["FAQs", "Rules & Policies", "Contact Support"],
+      description: "Need assistance? Our guild masters and support heroes are ready to guide you.",
+      links: ["FAQs", "Community Rules", "Contact Support"],
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b mt-10 from-gray-950 via-gray-900 to-black text-white p-10">
-      <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-14 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent drop-shadow-lg">
-        ⚡ Game Information ⚡
+    <div
+      className="min-h-screen bg-cover mt-10 bg-center text-white p-10"
+      style={{
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1606112219348-204d7d8b94ee?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')",
+      }}
+    >
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/70 "></div>
+
+      <h1 className="relative \text-5xl md:text-6xl font-extrabold text-center mb-16 bg-gradient-to-r from-red-500 via-purple-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg tracking-wider">
+        ⚔️ Nos Dionisy: Game Codex ⚔️
       </h1>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto relative ">
         {sections.map((sec, idx) => (
           <motion.div
             key={idx}
-            whileHover={{ scale: 1.05, y: -5 }}
-            className="bg-gray-900/80 border border-gray-700 rounded-2xl p-6 shadow-lg hover:shadow-cyan-500/40 transition relative overflow-hidden group"
+            whileHover={{ scale: 1.05, rotate: -1 }}
+            className="bg-gray-900/80 backdrop-blur-md border border-purple-600/40 rounded-2xl p-6 shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:shadow-[0_0_40px_rgba(34,211,238,0.7)] transition duration-300"
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition duration-500"></div>
+            <h2 className="text-2xl font-bold mb-4 text-purple-300 drop-shadow">
+              {sec.title}
+            </h2>
 
-            <div className="mb-4 relative z-10">
-              <h2 className="text-2xl font-bold tracking-wide group-hover:text-cyan-400 transition">
-                {sec.title}
-              </h2>
-            </div>
+            <p className="text-gray-300 mb-6">{sec.description}</p>
 
-            <p className="text-gray-300 mb-5 relative z-10">{sec.description}</p>
-
-            <ul className="space-y-2 relative z-10">
+            <div className="flex flex-col gap-3">
               {sec.links.map((link, i) => (
-                <li
+                <button
                   key={i}
-                  className="text-sm text-gray-400 flex items-center gap-2 cursor-pointer hover:text-cyan-300 transition"
+                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-cyan-500 rounded-lg text-sm font-semibold hover:from-cyan-500 hover:to-purple-600 transition"
                 >
-                  <span className="text-cyan-400">➝</span> {link}
-                </li>
+                  {link}
+                </button>
               ))}
-            </ul>
+            </div>
           </motion.div>
         ))}
       </div>
