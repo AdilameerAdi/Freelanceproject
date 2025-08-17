@@ -1,14 +1,17 @@
+import img from "./img/2.png";
 export default function Footer() {
   return (
     <footer className="bg-[#0D1B2A] text-white py-10">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* About / Logo */}
         <div className="flex flex-col items-center md:items-start">
-          <img
-            src="https://board.dev.gameforge.com/images/styleLogo-bb5615dabb13a7af5dbd081b8ea5d521f9d1c79b.png"
-            alt="Logo"
-            className="w-32 h-auto mb-4"
-          />
+          <a href="https://nosdionisy.com/" target="_blank" rel="noopener noreferrer">
+                 <img
+                   src={img}
+                   alt="Logo"
+                   className="max-w-full mt-2 h-[150px]"
+                 />
+               </a>
           <p className="text-center md:text-left text-sm">
             Bringing you the best gaming experience with a modern and elegant interface.
           </p>
