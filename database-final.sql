@@ -85,3 +85,18 @@ CREATE TABLE comment_likes (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(comment_id, user_identifier)
 );
+
+CREATE TABLE updates (
+  id BIGSERIAL PRIMARY KEY,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  version TEXT,
+  category TEXT DEFAULT 'general',
+  priority TEXT DEFAULT 'medium',
+  status TEXT DEFAULT 'published',
+  author_id BIGINT REFERENCES staff(id) ON DELETE SET NULL,
+  author_name TEXT NOT NULL,
+  is_featured BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);

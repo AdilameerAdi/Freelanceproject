@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { eventService, staffService, supportService } from "../../services/supabase";
+import { eventService, staffService, supportService, updateService } from "../../services/supabase";
 
 export default function AdminDashboard({ staffMembers, setStaffMembers, events, setEvents, loadEvents, loadStaff }) {
   const [activeSection, setActiveSection] = useState("events");
@@ -31,9 +31,25 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
   const [resolvedTickets, setResolvedTickets] = useState([]);
   const [ticketsLoading, setTicketsLoading] = useState(false);
 
+  // Updates state
+  const [updates, setUpdates] = useState([]);
+  const [updateForm, setUpdateForm] = useState({
+    title: "",
+    content: "",
+    version: "",
+    category: "general",
+    priority: "medium",
+    is_featured: false
+  });
+  const [editingUpdateId, setEditingUpdateId] = useState(null);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const [updatesLoading, setUpdatesLoading] = useState(false);
+
   useEffect(() => {
     if (activeSection === "pending") {
       loadTickets();
+    } else if (activeSection === "updates") {
+      loadUpdates();
     }
   }, [activeSection]);
 
@@ -75,6 +91,90 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
         alert('Failed to delete ticket. Please try again.');
       }
     }
+  };
+
+  // Updates Management Functions
+  const loadUpdates = async () => {
+    try {
+      setUpdatesLoading(true);
+      const updatesData = await updateService.getAllUpdatesAdmin();
+      setUpdates(updatesData);
+    } catch (error) {
+      console.error('Error loading updates:', error);
+    } finally {
+      setUpdatesLoading(false);
+    }
+  };
+
+  const handleAddUpdate = async () => {
+    if (updateForm.title && updateForm.content) {
+      try {
+        const updateData = {
+          ...updateForm,
+          author_id: 1, // This should be the current admin's ID
+          author_name: "Admin" // This should be the current admin's name
+        };
+        
+        await updateService.createUpdate(updateData);
+        await loadUpdates();
+        resetUpdateForm();
+        alert("Update created successfully!");
+      } catch (error) {
+        console.error('Error creating update:', error);
+        alert("Failed to create update. Please try again.");
+      }
+    }
+  };
+
+  const handleUpdateUpdate = async () => {
+    try {
+      await updateService.updateUpdate(editingUpdateId, updateForm);
+      await loadUpdates();
+      resetUpdateForm();
+      alert("Update updated successfully!");
+    } catch (error) {
+      console.error('Error updating update:', error);
+      alert("Failed to update update. Please try again.");
+    }
+  };
+
+  const handleDeleteUpdate = async (id) => {
+    if (window.confirm("Are you sure you want to delete this update?")) {
+      try {
+        await updateService.deleteUpdate(id);
+        await loadUpdates();
+        alert("Update deleted successfully!");
+      } catch (error) {
+        console.error('Error deleting update:', error);
+        alert("Failed to delete update. Please try again.");
+      }
+    }
+  };
+
+  const handleEditUpdate = (update) => {
+    setUpdateForm({
+      title: update.title,
+      content: update.content,
+      version: update.version || "",
+      category: update.category,
+      priority: update.priority,
+      is_featured: update.is_featured
+    });
+    setEditingUpdateId(update.id);
+    setShowUpdateForm(true);
+  };
+
+  const resetUpdateForm = () => {
+    setUpdateForm({
+      title: "",
+      content: "",
+      version: "",
+      category: "general",
+      priority: "medium",
+      is_featured: false
+    });
+    setEditingUpdateId(null);
+    setShowUpdateForm(false);
   };
 
   // Event Management Functions
@@ -700,15 +800,184 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
       case "updates":
         return (
           <div>
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">Updates</h2>
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">Updates Management</h2>
             <p className="text-gray-600 mb-6">
-              Post system updates and announcements.
+              Create and manage system updates, announcements, and version releases.
             </p>
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                + Post Update
+
+            {/* Add/Edit Update Form */}
+            {showUpdateForm && (
+              <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <h3 className="text-xl font-semibold mb-4">
+                  {editingUpdateId ? "Edit Update" : "Create New Update"}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Update Title</label>
+                    <input
+                      type="text"
+                      value={updateForm.title}
+                      onChange={(e) => setUpdateForm({...updateForm, title: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter update title"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Version (Optional)</label>
+                    <input
+                      type="text"
+                      value={updateForm.version}
+                      onChange={(e) => setUpdateForm({...updateForm, version: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="e.g., v1.2.3"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Category</label>
+                    <select
+                      value={updateForm.category}
+                      onChange={(e) => setUpdateForm({...updateForm, category: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {updateService.getCategories().map(category => (
+                        <option key={category} value={category}>
+                          {category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Priority</label>
+                    <select
+                      value={updateForm.priority}
+                      onChange={(e) => setUpdateForm({...updateForm, priority: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {updateService.getPriorities().map(priority => (
+                        <option key={priority.value} value={priority.value}>{priority.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-1">Update Content</label>
+                    <textarea
+                      value={updateForm.content}
+                      onChange={(e) => setUpdateForm({...updateForm, content: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows="6"
+                      placeholder="Describe the update details, changes, and any important information..."
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={updateForm.is_featured}
+                        onChange={(e) => setUpdateForm({...updateForm, is_featured: e.target.checked})}
+                        className="rounded"
+                      />
+                      <span className="text-sm font-medium">Featured Update (appears prominently on user side)</span>
+                    </label>
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={editingUpdateId ? handleUpdateUpdate : handleAddUpdate}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  >
+                    {editingUpdateId ? "Update" : "Create"} Update
+                  </button>
+                  <button
+                    onClick={resetUpdateForm}
+                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Add New Update Button */}
+            {!showUpdateForm && (
+              <button
+                onClick={() => setShowUpdateForm(true)}
+                className="mb-6 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              >
+                + Create New Update
               </button>
-              <p className="text-gray-500 text-center py-8 mt-4">Updates management coming soon...</p>
+            )}
+
+            {/* Updates List */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-xl font-semibold mb-4">All Updates ({updates.length})</h3>
+              {updatesLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p>Loading updates...</p>
+                </div>
+              ) : updates.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No updates created yet. Click "Create New Update" to get started.</p>
+              ) : (
+                <div className="space-y-4">
+                  {updates.map((update) => (
+                    <div key={update.id} className="border rounded-lg p-4 hover:shadow-md transition">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h4 className="text-lg font-semibold">{update.title}</h4>
+                            {update.version && (
+                              <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
+                                {update.version}
+                              </span>
+                            )}
+                            <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                              update.priority === 'critical' ? 'bg-red-100 text-red-800' :
+                              update.priority === 'high' ? 'bg-orange-100 text-orange-800' :
+                              update.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-green-100 text-green-800'
+                            }`}>
+                              {update.priority}
+                            </span>
+                            <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">
+                              {update.category.replace('-', ' ')}
+                            </span>
+                            {update.is_featured && (
+                              <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full font-medium">
+                                ⭐ Featured
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mb-2">By {update.author_name}</p>
+                          <p className="text-gray-700 mb-2">{update.content}</p>
+                          <p className="text-xs text-gray-500">
+                            Created: {new Date(update.created_at).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: 'short', 
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+                        <div className="flex gap-2 ml-4">
+                          <button
+                            onClick={() => handleEditUpdate(update)}
+                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUpdate(update.id)}
+                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         );

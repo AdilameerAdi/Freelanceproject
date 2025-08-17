@@ -809,3 +809,144 @@ export const commentService = {
     }
   }
 }
+
+// Updates related database operations
+export const updateService = {
+  // Get all updates (for user side)
+  async getAllUpdates() {
+    try {
+      const { data, error } = await supabase
+        .from('updates')
+        .select('*')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+      
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error('Error fetching updates:', error)
+      return []
+    }
+  },
+
+  // Get all updates (for admin side)
+  async getAllUpdatesAdmin() {
+    try {
+      const { data, error } = await supabase
+        .from('updates')
+        .select('*')
+        .order('created_at', { ascending: false })
+      
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error('Error fetching updates:', error)
+      return []
+    }
+  },
+
+  // Get featured updates
+  async getFeaturedUpdates(limit = 5) {
+    try {
+      const { data, error } = await supabase
+        .from('updates')
+        .select('*')
+        .eq('status', 'published')
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+      
+      if (error) throw error
+      return data || []
+    } catch (error) {
+      console.error('Error fetching featured updates:', error)
+      return []
+    }
+  },
+
+  // Create a new update
+  async createUpdate(updateData) {
+    try {
+      const { data, error } = await supabase
+        .from('updates')
+        .insert([{
+          title: updateData.title,
+          content: updateData.content,
+          version: updateData.version,
+          category: updateData.category || 'general',
+          priority: updateData.priority || 'medium',
+          status: updateData.status || 'published',
+          author_id: updateData.author_id,
+          author_name: updateData.author_name,
+          is_featured: updateData.is_featured || false,
+          created_at: new Date().toISOString()
+        }])
+        .select()
+      
+      if (error) throw error
+      return data[0]
+    } catch (error) {
+      console.error('Error creating update:', error)
+      throw error
+    }
+  },
+
+  // Update an existing update
+  async updateUpdate(id, updateData) {
+    try {
+      const { data, error } = await supabase
+        .from('updates')
+        .update({
+          ...updateData,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .select()
+      
+      if (error) throw error
+      return data[0]
+    } catch (error) {
+      console.error('Error updating update:', error)
+      throw error
+    }
+  },
+
+  // Delete an update
+  async deleteUpdate(id) {
+    try {
+      const { error } = await supabase
+        .from('updates')
+        .delete()
+        .eq('id', id)
+      
+      if (error) throw error
+      return true
+    } catch (error) {
+      console.error('Error deleting update:', error)
+      throw error
+    }
+  },
+
+  // Get update categories
+  getCategories() {
+    return [
+      'general',
+      'bug-fix',
+      'feature',
+      'security',
+      'performance',
+      'ui-update',
+      'maintenance'
+    ]
+  },
+
+  // Get priority levels
+  getPriorities() {
+    return [
+      { value: 'low', label: 'Low', color: 'text-green-500' },
+      { value: 'medium', label: 'Medium', color: 'text-yellow-500' },
+      { value: 'high', label: 'High', color: 'text-orange-500' },
+      { value: 'critical', label: 'Critical', color: 'text-red-500' }
+    ]
+  }
+}
