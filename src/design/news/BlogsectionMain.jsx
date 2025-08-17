@@ -1,8 +1,8 @@
-import BlogSection from "./Blogsection"
+import CommunityHub from "./Blogsection"
 import Footer from "../Footer"
 export default function BlogsectionMain() {
     return<>
-    <BlogSection></BlogSection>
+    <CommunityHub></CommunityHub>
     <Footer></Footer>
     </>
 }

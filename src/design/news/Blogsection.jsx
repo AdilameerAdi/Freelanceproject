@@ -339,7 +339,7 @@ export default function CommunityHub() {
                       </div>
                       <div className="flex items-center justify-center gap-1 text-gray-300">
                         <MessageCircle size={12} /> 
-                        <span>Comments</span>
+                        <span>{post.comments_count || 0}</span>
                       </div>
                     </div>
                     {post.is_trending && (
@@ -461,12 +461,12 @@ export default function CommunityHub() {
 
       {/* Post Modal */}
       {showModal && selectedPost && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
-          <div className="bg-[#0a0f1f] border border-purple-500/40 rounded-xl sm:rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
-            <div className="flex flex-col lg:flex-row h-full">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-[#0a0f1f] border border-purple-500/40 rounded-xl sm:rounded-2xl shadow-2xl max-w-6xl w-full min-h-[50vh] max-h-none my-4">
+            <div className="flex flex-col lg:flex-row min-h-full">
               
               {/* Left Side - Post Content */}
-              <div className="flex-1 p-4 sm:p-6 lg:border-r border-purple-500/40">
+              <div className="w-full lg:flex-1 p-4 sm:p-6 lg:border-r border-purple-500/40">
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-3">
                     <img
@@ -513,7 +513,7 @@ export default function CommunityHub() {
                     />
                   </div>
                 )}
-                <div className="text-gray-300 leading-relaxed mb-6 max-h-64 overflow-y-auto">
+                <div className="text-gray-300 leading-relaxed mb-6">
                   {selectedPost.content}
                 </div>
 
@@ -531,13 +531,13 @@ export default function CommunityHub() {
               </div>
 
               {/* Right Side - Comments */}
-              <div className="w-full lg:w-1/2 flex flex-col lg:border-t-0 border-t border-purple-500/40">
+              <div className="w-full lg:w-1/2 flex flex-col lg:border-t-0 border-t border-purple-500/40 lg:min-h-0">
                 <div className="p-4 sm:p-6 border-b border-yellow-500/30">
                   <h3 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">Comments</h3>
                 </div>
 
                 {/* Comments List */}
-                <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+                <div className={`flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 ${comments.length > 4 ? 'max-h-80' : ''}`}>
                   {commentsLoading ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400 mx-auto mb-4"></div>

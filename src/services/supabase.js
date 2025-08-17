@@ -349,7 +349,7 @@ export const postService = {
     try {
       const offset = (page - 1) * limit
       
-      const { data, error } = await supabase
+      const { data: posts, error } = await supabase
         .from('posts')
         .select('*')
         .eq('is_published', true)
@@ -357,7 +357,25 @@ export const postService = {
         .range(offset, offset + limit - 1)
       
       if (error) throw error
-      return data || []
+      
+      // Get comments count for each post
+      const postsWithCommentCount = await Promise.all(
+        (posts || []).map(async (post) => {
+          const { count, error: countError } = await supabase
+            .from('post_comments')
+            .select('*', { count: 'exact', head: true })
+            .eq('post_id', post.id)
+          
+          if (countError) console.error('Error counting comments:', countError)
+          
+          return {
+            ...post,
+            comments_count: count || 0
+          }
+        })
+      )
+      
+      return postsWithCommentCount
     } catch (error) {
       console.error('Error fetching paginated posts:', error)
       return []
@@ -383,7 +401,7 @@ export const postService = {
   // Get trending posts (max 3, descending order of likes - most likes first)
   async getTrendingPosts(limit = 3) {
     try {
-      const { data, error } = await supabase
+      const { data: posts, error } = await supabase
         .from('posts')
         .select('*')
         .eq('is_published', true)
@@ -393,7 +411,25 @@ export const postService = {
         .limit(limit)
       
       if (error) throw error
-      return data || []
+      
+      // Get comments count for each post
+      const postsWithCommentCount = await Promise.all(
+        (posts || []).map(async (post) => {
+          const { count, error: countError } = await supabase
+            .from('post_comments')
+            .select('*', { count: 'exact', head: true })
+            .eq('post_id', post.id)
+          
+          if (countError) console.error('Error counting comments:', countError)
+          
+          return {
+            ...post,
+            comments_count: count || 0
+          }
+        })
+      )
+      
+      return postsWithCommentCount
     } catch (error) {
       console.error('Error fetching trending posts:', error)
       return []
