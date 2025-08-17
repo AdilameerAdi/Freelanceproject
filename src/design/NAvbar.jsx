@@ -60,15 +60,25 @@ const navigate = useNavigate();
             ))}
           </ul>
 
-          {/* Admin + Hamburger */}
+          {/* Admin + Staff + Hamburger */}
           <div className="flex items-center w-full md:w-auto justify-between">
-            {/* Admin Login button (route to /admin) */}
-            <Link
-              to="/admin"
-              className="bg-[#2ECC40] text-[#001F3F] font-medium px-4 py-1 rounded hover:bg-[#7FDBFF] transition-colors"
-            >
-              Admin Login
-            </Link>
+            <div className="flex space-x-2">
+              {/* Admin Login button (route to /admin) */}
+              <Link
+                to="/admin"
+                className="bg-[#2ECC40] text-[#001F3F] font-medium px-4 py-1 rounded hover:bg-[#7FDBFF] transition-colors"
+              >
+                Admin Login
+              </Link>
+              
+              {/* Staff Login button (route to /staff-panel) */}
+              <Link
+                to="/staff-panel"
+                className="bg-[#FF851B] text-[#001F3F] font-medium px-4 py-1 rounded hover:bg-[#FFDC00] transition-colors"
+              >
+                Staff Login
+              </Link>
+            </div>
 
             {/* Hamburger */}
             <div className="md:hidden ml-auto">

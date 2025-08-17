@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { eventService } from "./services/supabase";
+import { eventService, staffService } from "./services/supabase";
 
 import Navbar from "./design/NAvbar";
 
@@ -15,12 +15,13 @@ import Mainfaqs from "./design/faqs/Mainfaqs";
 import MainRev from "./design/Review/MainRev";
 import AdminMain from "./design/Admin/AdminMain";
 import AdminDashboard from "./design/Adminpannel/AdminDashboard";
+import StaffPanelMain from "./design/staff/StaffPanelMain";
 
 // Wrapper to conditionally show Navbar
 function Layout({ children }) {
   const location = useLocation();
-  // Hide Navbar on admin dashboard
-  const hideNavbarPaths = ["/admin-dashboard"];
+  // Hide Navbar on admin dashboard and staff panel
+  const hideNavbarPaths = ["/admin-dashboard", "/staff-panel"];
   const showNavbar = !hideNavbarPaths.includes(location.pathname);
 
   return (
@@ -33,27 +34,16 @@ function Layout({ children }) {
 
 function App() {
   // 🔹 Shared staff state for both admin and staff pages
-  const [staffMembers, setStaffMembers] = useState([
-    {
-      id: 1,
-      name: "Leader",
-      role: "Leader",
-      avatar: "https://i.pravatar.cc/100?img=1",
-      joined: "Dec 12th 2023",
-      posts: 0,
-      likes: 0,
-      points: 0,
-      hits: 0,
-    },
-  ]);
+  const [staffMembers, setStaffMembers] = useState([]);
 
   // 🔹 Shared events state for admin management and user display
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch events from database on component mount
+  // Fetch events and staff from database on component mount
   useEffect(() => {
     loadEvents();
+    loadStaff();
   }, []);
 
   const loadEvents = async () => {
@@ -65,6 +55,15 @@ function App() {
       console.error('Failed to load events:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadStaff = async () => {
+    try {
+      const data = await staffService.getAllStaff();
+      setStaffMembers(data);
+    } catch (error) {
+      console.error('Failed to load staff:', error);
     }
   };
 
@@ -95,8 +94,12 @@ function App() {
               events={events}
               setEvents={setEvents}
               loadEvents={loadEvents}
+              loadStaff={loadStaff}
             />}
           />
+
+          {/* Staff panel for staff login */}
+          <Route path="/staff-panel" element={<StaffPanelMain />} />
         </Routes>
       </Layout>
     </Router>

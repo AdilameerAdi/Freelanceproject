@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { eventService } from "../../services/supabase";
+import { eventService, staffService } from "../../services/supabase";
 
-export default function AdminDashboard({ staffMembers, setStaffMembers, events, setEvents, loadEvents }) {
+export default function AdminDashboard({ staffMembers, setStaffMembers, events, setEvents, loadEvents, loadStaff }) {
   const [activeSection, setActiveSection] = useState("events");
   
   // Event Management State
@@ -14,6 +14,17 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
   });
   const [editingEventId, setEditingEventId] = useState(null);
   const [showEventForm, setShowEventForm] = useState(false);
+
+  // Staff Management State
+  const [staffForm, setStaffForm] = useState({
+    name: "",
+    username: "",
+    password: "",
+    role: "Moderator",
+    avatar: ""
+  });
+  const [editingStaffId, setEditingStaffId] = useState(null);
+  const [showStaffForm, setShowStaffForm] = useState(false);
 
   // Event Management Functions
   const handleAddEvent = async () => {
@@ -80,31 +91,88 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
   };
 
   // Staff Management Functions
-  const updateStaffStat = (id, field) => {
-    setStaffMembers((prev) =>
-      prev.map((staff) =>
-        staff.id === id ? { ...staff, [field]: staff[field] + 1 } : staff
-      )
-    );
-  };
-
-  const changePhoto = (id, newUrl) => {
-    if (newUrl) {
-      setStaffMembers((prev) =>
-        prev.map((staff) =>
-          staff.id === id ? { ...staff, avatar: newUrl } : staff
-        )
-      );
+  const handleAddStaff = async () => {
+    if (staffForm.name && staffForm.username && staffForm.password && staffForm.role) {
+      try {
+        await staffService.createStaff(staffForm);
+        await loadStaff(); // Refresh staff list
+        resetStaffForm();
+        alert("Staff member created successfully!");
+      } catch (error) {
+        console.error('Error creating staff:', error);
+        alert("Failed to create staff member. Username might already exist.");
+      }
     }
   };
 
-  const changeJoinDate = (id, newDate) => {
-    if (newDate) {
-      setStaffMembers((prev) =>
-        prev.map((staff) =>
-          staff.id === id ? { ...staff, joined: newDate } : staff
-        )
-      );
+  const handleUpdateStaff = async () => {
+    try {
+      await staffService.updateStaff(editingStaffId, staffForm);
+      await loadStaff(); // Refresh staff list
+      resetStaffForm();
+      alert("Staff member updated successfully!");
+    } catch (error) {
+      console.error('Error updating staff:', error);
+      alert("Failed to update staff member.");
+    }
+  };
+
+  const handleDeleteStaff = async (id) => {
+    if (window.confirm("Are you sure you want to remove this staff member?")) {
+      try {
+        await staffService.deleteStaff(id);
+        await loadStaff(); // Refresh staff list
+        alert("Staff member removed successfully!");
+      } catch (error) {
+        console.error('Error deleting staff:', error);
+        alert("Failed to remove staff member.");
+      }
+    }
+  };
+
+  const handleEditStaff = (staff) => {
+    setStaffForm({
+      name: staff.name,
+      username: staff.username,
+      password: staff.password,
+      role: staff.role,
+      avatar: staff.avatar
+    });
+    setEditingStaffId(staff.id);
+    setShowStaffForm(true);
+  };
+
+  const resetStaffForm = () => {
+    setStaffForm({
+      name: "",
+      username: "",
+      password: "",
+      role: "Moderator",
+      avatar: ""
+    });
+    setEditingStaffId(null);
+    setShowStaffForm(false);
+  };
+
+  const changeAvatar = async (id, newUrl) => {
+    try {
+      await staffService.updateStaff(id, { avatar: newUrl });
+      await loadStaff(); // Refresh staff list
+      alert("Avatar updated successfully!");
+    } catch (error) {
+      console.error('Error updating avatar:', error);
+      alert("Failed to update avatar. Please try again.");
+    }
+  };
+
+  const changeJoinDate = async (id, newDate) => {
+    try {
+      await staffService.updateStaff(id, { joined: newDate });
+      await loadStaff(); // Refresh staff list
+      alert("Join date updated successfully!");
+    } catch (error) {
+      console.error('Error updating join date:', error);
+      alert("Failed to update join date. Please try again.");
     }
   };
 
@@ -258,8 +326,95 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
           <div>
             <h2 className="text-3xl font-bold mb-6 text-gray-800">Staff Management</h2>
             <p className="text-gray-600 mb-6">
-              View and manage staff members, update their profiles and statistics.
+              Add new staff members, manage their roles and credentials, and update their profiles.
             </p>
+
+            {/* Add/Edit Staff Form */}
+            {showStaffForm && (
+              <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <h3 className="text-xl font-semibold mb-4">
+                  {editingStaffId ? "Edit Staff Member" : "Add New Staff Member"}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Full Name</label>
+                    <input
+                      type="text"
+                      value={staffForm.name}
+                      onChange={(e) => setStaffForm({...staffForm, name: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter full name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Username</label>
+                    <input
+                      type="text"
+                      value={staffForm.username}
+                      onChange={(e) => setStaffForm({...staffForm, username: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter username"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Password</label>
+                    <input
+                      type="text"
+                      value={staffForm.password}
+                      onChange={(e) => setStaffForm({...staffForm, password: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter password"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Role</label>
+                    <select
+                      value={staffForm.role}
+                      onChange={(e) => setStaffForm({...staffForm, role: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {staffService.getAvailableRoles().map(role => (
+                        <option key={role} value={role}>{role}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-1">Avatar URL (Optional)</label>
+                    <input
+                      type="url"
+                      value={staffForm.avatar}
+                      onChange={(e) => setStaffForm({...staffForm, avatar: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="https://example.com/avatar.jpg"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={editingStaffId ? handleUpdateStaff : handleAddStaff}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  >
+                    {editingStaffId ? "Update Staff" : "Add Staff"}
+                  </button>
+                  <button
+                    onClick={resetStaffForm}
+                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Add New Staff Button */}
+            {!showStaffForm && (
+              <button
+                onClick={() => setShowStaffForm(true)}
+                className="mb-6 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              >
+                + Add New Staff Member
+              </button>
+            )}
 
             <div className="grid gap-6 md:grid-cols-2">
               {staffMembers.map((staff) => (
@@ -298,34 +453,38 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                   {/* Controls */}
                   <div className="px-6 py-3 flex flex-wrap gap-2 border-t">
                     <button
-                      onClick={() => updateStaffStat(staff.id, "posts")}
-                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                    >
-                      + Post
-                    </button>
-                    <button
-                      onClick={() => updateStaffStat(staff.id, "likes")}
-                      className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
-                    >
-                      + Like
-                    </button>
-                    <button
                       onClick={() => {
-                        const newUrl = prompt("Enter new photo URL:", staff.avatar);
-                        changePhoto(staff.id, newUrl);
+                        const newUrl = prompt("Enter new avatar URL:", staff.avatar);
+                        if (newUrl && newUrl.trim() !== "") {
+                          changeAvatar(staff.id, newUrl.trim());
+                        }
                       }}
                       className="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 transition"
                     >
-                      Change Photo
+                      Change Avatar
                     </button>
                     <button
                       onClick={() => {
-                        const newDate = prompt("Enter new join date:", staff.joined);
-                        changeJoinDate(staff.id, newDate);
+                        const newDate = prompt("Enter new join date (e.g., Jan 15th 2024):", staff.joined);
+                        if (newDate && newDate.trim() !== "") {
+                          changeJoinDate(staff.id, newDate.trim());
+                        }
                       }}
                       className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
                     >
-                      Change Date
+                      Change Join Date
+                    </button>
+                    <button
+                      onClick={() => handleEditStaff(staff)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                    >
+                      Edit Details
+                    </button>
+                    <button
+                      onClick={() => handleDeleteStaff(staff.id)}
+                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                    >
+                      Remove
                     </button>
                   </div>
                 </div>
