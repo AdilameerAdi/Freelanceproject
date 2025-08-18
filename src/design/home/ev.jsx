@@ -62,7 +62,7 @@ export default function TextEventSlider({ events = [] }) {
         <div className="absolute bottom-32 right-1/3 w-2 h-2 bg-green-400 rounded-full animate-ping opacity-20"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto text-center relative">
+      <div className="max-w-6xl mx-auto text-center mt-10 relative">
         <motion.h2 
           className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 md:mb-8 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent"
           initial={{ opacity: 0, y: -20 }}

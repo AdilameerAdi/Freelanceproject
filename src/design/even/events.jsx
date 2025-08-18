@@ -10,7 +10,7 @@ export default function Events({ events = [] }) {
   return (
     <div className="p-3 sm:p-6 lg:p-8 min-h-screen bg-gradient-to-b from-[#0a0f1f] via-[#0b132b] to-black text-white relative">
       {/* Neon Glow Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.2),transparent_70%)]"></div>
+      <div className="absolute inset-0 mt-10 bg-[radial-gradient(circle_at_top,rgba(168,85,247,0.2),transparent_70%)]"></div>
 
       <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-center mb-6 sm:mb-8 lg:mb-10 tracking-wide 
         text-transparent bg-clip-text bg-gradient-to-r mt-6 sm:mt-8 lg:mt-10 from-purple-400 to-cyan-400">
