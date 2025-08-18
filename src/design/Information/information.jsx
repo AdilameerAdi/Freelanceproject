@@ -1,76 +1,144 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { CheckCircle2 } from "lucide-react";
+import logo from "../img/2.png"; // Dionisy logo
+import boxes from "../img/boxes.png";
+import first from "../img/first.png"
+import second from "../img/second.png"
+import third from "../img/three.png"
+import fourth from "../img/fourth.png"
+import fifth from "../img/fifth.png"
 
 export default function Information() {
   const sections = [
-    {
-      title: "Getting Started",
-      description: "Forge your path into the world of Nos Dionisy. Download the client, create your hero, and step into battle.",
-      links: ["Download Client", "Create Account", "New Player Guide"],
+     {
+      title: "Prestige Legacy",
+      points: [
+        "Progress through 10 Prestige levels, each with unique multi-step challenges and timed solo boss duels.",
+        "Earn customisable stat bonuses—some chosen by you, some unlocked.",
+        "Showcase your unique Prestige identity.",
+      ],
+      image:first,
     },
     {
-      title: "Gameplay Basics",
-      description: "Learn to master combat, explore dungeons, and rise in power as a true warrior of Dionisy.",
-      links: ["Classes & Skills", "Leveling Guide", "PvP & Arena"],
+      title: "Party Quests",
+      points: [
+        "Instanced 1–3 player challenges, daily and weekly.",
+        "EXP scales to your level and performance.",
+        "No endless questlines progression is fast and co-operative.",
+      ],
+      image:
+       second,
     },
     {
-      title: "World & Lore",
-      description: "Discover the dark legends, ancient ruins, and monstrous foes that shape this universe.",
-      links: ["Main Storyline", "Regions & Maps", "Bosses & Raids"],
+      title: "Raffle System",
+      points: [
+        "Join events to earn raffle entries for gold, rare items, gems and surprises.",
+        "Each draw features unique rules and rotating rewards.",
+      ],
+      image:
+       third,
+    },
+  
+     {
+      title: "Dynamic Gameplay & Events",
+      points: [
+        "RBB and Icebreaker, now with smarter rules.",
+        "Survival PvE/PvP improved private instances, solo/group World Bosses.",
+        "Express Raids—quicker, higher rewards.",
+        "Chill Instance: gain EXP and reputation just by socialising.",
+        "Classic areas and event maps refreshed and improved.",
+      ],
+      image:
+        fourth,
     },
     {
-      title: "Economy & Items",
-      description: "Trade with adventurers, craft powerful artifacts, and uncover legendary loot.",
-      links: ["Gold & Trading", "Crafting System", "Rare Treasures"],
-    },
-    {
-      title: "Support & FAQ",
-      description: "Need assistance? Our guild masters and support heroes are ready to guide you.",
-      links: ["FAQs", "Community Rules", "Contact Support"],
+      title: "A Better Way to Play",
+      points: [
+        "Less waiting, more action.",
+        "Every system refined for smoother, faster, and more flexible gameplay.",
+        "More freedom to play your way.",
+      ],
+      image:
+        fifth,
     },
   ];
 
   return (
-    <div
-      className="min-h-screen bg-cover mt-10 bg-center text-white p-10"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1606112219348-204d7d8b94ee?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')",
-      }}
-    >
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/70 "></div>
-
-      <h1 className="relative \text-5xl md:text-6xl font-extrabold text-center mb-16 bg-gradient-to-r from-red-500 via-purple-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-lg tracking-wider">
-        ⚔️ Nos Dionisy: Game Codex ⚔️
-      </h1>
-
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto relative ">
-        {sections.map((sec, idx) => (
-          <motion.div
-            key={idx}
-            whileHover={{ scale: 1.05, rotate: -1 }}
-            className="bg-gray-900/80 backdrop-blur-md border border-purple-600/40 rounded-2xl p-6 shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:shadow-[0_0_40px_rgba(34,211,238,0.7)] transition duration-300"
-          >
-            <h2 className="text-2xl font-bold mb-4 text-purple-300 drop-shadow">
-              {sec.title}
-            </h2>
-
-            <p className="text-gray-300 mb-6">{sec.description}</p>
-
-            <div className="flex flex-col gap-3">
-              {sec.links.map((link, i) => (
-                <button
-                  key={i}
-                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-cyan-500 rounded-lg text-sm font-semibold hover:from-cyan-500 hover:to-purple-600 transition"
-                >
-                  {link}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        ))}
+    <div className="bg-[#3F9421] mt-10 min-h-screen py-10 relative">
+      {/* Dionisy Logo */}
+      <div className="flex bg-gradient-to-b from-white via-white to-sky-400 justify-center ">
+        <img src={logo} alt="Dionisy Logo" className="h-20  md:h-36 drop-shadow-lg" />
       </div>
+
+      {/* Welcome Block */}
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
+        className="bg-[#211610] text-white rounded-2xl p-10 shadow-xl max-w-4xl mx-auto mb-14 relative overflow-hidden border-4 border-green-700"
+      >
+        <h1 className="text-4xl font-bold text-center mb-6 text-yellow-300 drop-shadow">
+          Welcome to Dionisy!
+        </h1>
+        <p className="text-center text-gray-200 mb-8 max-w-2xl mx-auto">
+          A new adventure for NosTale with balanced progression. Discover unique
+          challenges, custom systems, and exclusive rewards.
+          <br /> <br />
+          Everything changed when something came from the sky—are you ready for what
+          comes next?
+        </p>
+
+        {/* Cartoon Character (replaces wooden buttons) */}
+        
+
+        {/* Boxes image from local import */}
+        <div>
+          <img src={boxes} alt="Boxes" className="w-full object-cover" />
+        </div>
+      </motion.div>
+
+      {/* 5 Boxes */}
+    {sections.map((section, idx) => (
+  <motion.div
+    key={idx}
+    initial={{ opacity: 0, y: 50 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, delay: idx * 0.1 }}
+    viewport={{ once: true }}
+    className="bg-[#211610] rounded-2xl p-10 shadow-xl max-w-4xl mx-auto mb-32 border-4 border-green-700 relative overflow-visible"
+  >
+    <div className="flex flex-col items-center">
+      {/* Title */}
+      <h3 className="text-2xl font-bold text-white mb-4">{section.title}</h3>
+
+      {/* Text List */}
+      <ul className="text-white space-y-2 text-left max-w-md mb-10">
+        {section.points.map((point, i) => (
+          <li key={i} className="flex items-start gap-2">
+            <CheckCircle2 className="text-green-600 w-5 h-5 mt-1" />
+            <span>{point}</span>
+          </li>
+        ))}
+      </ul>
+
+      {/* Image (half inside/half outside) */}
+      <div className="relative w-full flex justify-center">
+        <img
+          src={section.image}
+          alt={section.title}
+          className="w-full object-contain relative -mb-20" 
+        />
+      </div>
+    </div>
+  </motion.div>
+))}
+
+      {/* Footer */}
+      <h2 className="text-3xl md:text-4xl font-bold text-center mt-16 text-white drop-shadow">
+        Ready for your next adventure? <br /> Welcome to Dionisy.
+      </h2>
     </div>
   );
 }
