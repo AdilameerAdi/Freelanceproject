@@ -1129,7 +1129,8 @@ export const adminService = {
       const { data, error } = await supabase
         .from('admin_credentials')
         .select('*')
-        .eq('id', 1)
+        .order('id', { ascending: true })
+        .limit(1)
         .single()
 
       if (error) throw error
@@ -1146,7 +1147,8 @@ export const adminService = {
       const { data, error } = await supabase
         .from('admin_credentials')
         .select('*')
-        .eq('id', 1)
+        .order('id', { ascending: true })
+        .limit(1)
         .single()
 
       if (error) throw error
@@ -1161,18 +1163,47 @@ export const adminService = {
   // Update admin username and/or password
   async updateAdminCredentials({ username, password }) {
     try {
-      const payload = { updated_at: new Date().toISOString() }
-      if (username !== undefined) payload.username = username
-      if (password !== undefined) payload.password = password
-
-      const { data, error } = await supabase
+      // Check if a credentials row exists
+      const { data: existing, error: fetchError } = await supabase
         .from('admin_credentials')
-        .update(payload)
-        .eq('id', 1)
-        .select()
+        .select('*')
+        .order('id', { ascending: true })
+        .limit(1)
+        .single()
 
-      if (error) throw error
-      return data?.[0] || null
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        // PGRST116 = No rows found
+        throw fetchError
+      }
+
+      const timestamp = new Date().toISOString()
+      if (existing) {
+        const payload = { updated_at: timestamp }
+        if (username !== undefined) payload.username = username
+        if (password !== undefined) payload.password = password
+
+        const { data, error } = await supabase
+          .from('admin_credentials')
+          .update(payload)
+          .eq('id', existing.id)
+          .select()
+
+        if (error) throw error
+        return data?.[0] || null
+      } else {
+        const insertPayload = {
+          username: username ?? 'adil',
+          password: password ?? 'ameer',
+          created_at: timestamp,
+          updated_at: timestamp
+        }
+        const { data, error } = await supabase
+          .from('admin_credentials')
+          .insert([insertPayload])
+          .select()
+        if (error) throw error
+        return data?.[0] || null
+      }
     } catch (error) {
       console.error('Error updating admin credentials:', error)
       throw error
