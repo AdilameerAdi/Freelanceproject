@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { eventService, staffService, supportService, updateService, postService, imageUploadService } from "../../services/supabase";
+import { eventService, staffService, supportService, updateService, postService, imageUploadService, adminService } from "../../services/supabase";
 
 export default function AdminDashboard({ staffMembers, setStaffMembers, events, setEvents, loadEvents, loadStaff }) {
   const [activeSection, setActiveSection] = useState("events");
@@ -61,6 +61,10 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
   const [showPostForm, setShowPostForm] = useState(false);
   const [postsLoading, setPostsLoading] = useState(false);
 
+  // Admin Settings state
+  const [adminSettings, setAdminSettings] = useState({ username: "", password: "" });
+  const [loadingAdminSettings, setLoadingAdminSettings] = useState(false);
+
   useEffect(() => {
     if (activeSection === "pending") {
       loadTickets();
@@ -68,6 +72,8 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
       loadUpdates();
     } else if (activeSection === "news") {
       loadPosts();
+    } else if (activeSection === "settings") {
+      loadAdminSettings();
     }
   }, [activeSection]);
 
@@ -276,6 +282,36 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
         console.error('Error deleting post:', error);
         alert("Failed to delete post. Please try again.");
       }
+    }
+  };
+
+  // Admin settings handlers
+  const loadAdminSettings = async () => {
+    try {
+      setLoadingAdminSettings(true);
+      const creds = await adminService.getAdminCredentials();
+      if (creds) setAdminSettings({ username: creds.username || "", password: creds.password || "" });
+    } catch (e) {
+      console.error("Error loading admin settings", e);
+    } finally {
+      setLoadingAdminSettings(false);
+    }
+  };
+
+  const handleSaveAdminSettings = async () => {
+    if (!adminSettings.username || !adminSettings.password) {
+      alert("Please provide both username and password");
+      return;
+    }
+    try {
+      await adminService.updateAdminCredentials({
+        username: adminSettings.username,
+        password: adminSettings.password
+      });
+      alert("Admin credentials updated.");
+    } catch (e) {
+      console.error("Error saving admin settings", e);
+      alert("Failed to save admin settings.");
     }
   };
 
@@ -1313,6 +1349,50 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
           </div>
         );
 
+      case "settings":
+        return (
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">Admin Settings</h2>
+            <p className="text-gray-300 mb-6">Change the admin username and password used for login.</p>
+            <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg border border-gray-700 max-w-xl">
+              {loadingAdminSettings ? (
+                <p className="text-gray-300">Loading...</p>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-200">Admin Username</label>
+                    <input
+                      type="text"
+                      value={adminSettings.username}
+                      onChange={(e) => setAdminSettings({ ...adminSettings, username: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
+                      placeholder="Enter admin username"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-200">Admin Password</label>
+                    <input
+                      type="text"
+                      value={adminSettings.password}
+                      onChange={(e) => setAdminSettings({ ...adminSettings, password: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base"
+                      placeholder="Enter admin password"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveAdminSettings}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition"
+                    >
+                      Save Settings
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+
       default:
         return null;
     }
@@ -1468,6 +1548,24 @@ export default function AdminDashboard({ staffMembers, setStaffMembers, events, 
                   <div className="flex items-center">
                     <span className="text-xl mr-3">ℹ️</span>
                     <span>Information</span>
+                  </div>
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`w-full text-left p-3 rounded-lg transition ${
+                    activeSection === "settings"
+                      ? "bg-purple-600 text-white"
+                      : "hover:bg-gray-700 text-gray-300"
+                  }`}
+                  onClick={() => {
+                    setActiveSection("settings");
+                    setIsSidebarOpen(false);
+                  }}
+                >
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">⚙️</span>
+                    <span>Settings</span>
                   </div>
                 </button>
               </li>

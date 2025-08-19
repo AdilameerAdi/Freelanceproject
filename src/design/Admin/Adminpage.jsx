@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { adminService } from "../../services/supabase";
 
 export default function AdminPage() {
   const [username, setUsername] = useState("");
@@ -8,11 +9,12 @@ export default function AdminPage() {
 
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (username === "adil" && password === "ameer") {
+  const handleLogin = async () => {
+    setError("");
+    const isValid = await adminService.authenticateAdmin(username, password);
+    if (isValid) {
       alert("Login successful!");
-      setError("");
-      navigate("/admin-dashboard"); // Redirect to admin dashboard
+      navigate("/admin-dashboard");
     } else {
       setError("Invalid username or password");
     }
