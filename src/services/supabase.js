@@ -1120,3 +1120,62 @@ export const updateService = {
     ]
   }
 }
+
+// Admin credentials and authentication
+export const adminService = {
+  // Fetch current admin credentials (single row)
+  async getAdminCredentials() {
+    try {
+      const { data, error } = await supabase
+        .from('admin_credentials')
+        .select('*')
+        .eq('id', 1)
+        .single()
+
+      if (error) throw error
+      return data
+    } catch (error) {
+      console.error('Error fetching admin credentials:', error)
+      return null
+    }
+  },
+
+  // Authenticate admin by username/password comparison
+  async authenticateAdmin(username, password) {
+    try {
+      const { data, error } = await supabase
+        .from('admin_credentials')
+        .select('*')
+        .eq('id', 1)
+        .single()
+
+      if (error) throw error
+      if (!data) return false
+      return data.username === username && data.password === password
+    } catch (error) {
+      console.error('Error authenticating admin:', error)
+      return false
+    }
+  },
+
+  // Update admin username and/or password
+  async updateAdminCredentials({ username, password }) {
+    try {
+      const payload = { updated_at: new Date().toISOString() }
+      if (username !== undefined) payload.username = username
+      if (password !== undefined) payload.password = password
+
+      const { data, error } = await supabase
+        .from('admin_credentials')
+        .update(payload)
+        .eq('id', 1)
+        .select()
+
+      if (error) throw error
+      return data?.[0] || null
+    } catch (error) {
+      console.error('Error updating admin credentials:', error)
+      throw error
+    }
+  }
+}

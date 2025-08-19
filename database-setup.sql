@@ -193,6 +193,23 @@ CREATE TABLE IF NOT EXISTS updates (
 );
 
 -- ========================================
+-- 10. ADMIN CREDENTIALS TABLE
+-- ========================================
+-- Single-row table for admin username/password used for admin login
+CREATE TABLE IF NOT EXISTS admin_credentials (
+  id BIGSERIAL PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Seed default admin credentials if not present
+INSERT INTO admin_credentials (id, username, password)
+VALUES (1, 'adil', 'ameer')
+ON CONFLICT (id) DO NOTHING;
+
+-- ========================================
 -- STORED PROCEDURES AND FUNCTIONS
 -- ========================================
 
@@ -260,6 +277,7 @@ ALTER TABLE post_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comment_likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE support_tickets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE updates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_credentials ENABLE ROW LEVEL SECURITY;
 
 -- Public read access for published content
 CREATE POLICY "Public can view published posts" ON posts
@@ -289,6 +307,16 @@ CREATE POLICY "Public can view comment likes" ON comment_likes
   FOR SELECT USING (true);
 
 CREATE POLICY "Users can like comments" ON comment_likes
+  FOR INSERT WITH CHECK (true);
+
+-- Admin credentials policies (public access for simplicity in this demo)
+CREATE POLICY "Public can view admin credentials" ON admin_credentials
+  FOR SELECT USING (true);
+
+CREATE POLICY "Public can update admin credentials" ON admin_credentials
+  FOR UPDATE USING (true) WITH CHECK (true);
+
+CREATE POLICY "Public can insert admin credentials" ON admin_credentials
   FOR INSERT WITH CHECK (true);
 
 -- Support ticket policies - users can only see their own tickets
@@ -432,6 +460,7 @@ ORDER BY p.created_at DESC;
 -- ❤️ comment_likes - Comment like tracking  
 -- 🎫 support_tickets - User support system
 -- 📋 updates - Game updates and patches
+-- 👑 admin_credentials - Admin username/password for admin login
 --
 -- SECURITY FEATURES:
 -- 🔒 Row Level Security enabled on all tables
